@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom right, rgba(255, 101, 101, 0.00) 0%, rgba(0, 0, 0, 0.20) 50%) bottom right / 50% 50% no-repeat, linear-gradient(to bottom left, rgba(255, 101, 101, 0.00) 0%, rgba(0, 0, 0, 0.20) 50%) bottom left / 50% 50% no-repeat, linear-gradient(to top left, rgba(255, 101, 101, 0.00) 0%, rgba(0, 0, 0, 0.20) 50%) top left / 50% 50% no-repeat, linear-gradient(to top right, rgba(255, 101, 101, 0.00) 0%, rgba(0, 0, 0, 0.20) 50%) top right / 50% 50% no-repeat, #103611;
+}

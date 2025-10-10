@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/user.css">
+  <link rel="stylesheet" href="../styles/api.css">
+</head>
+<body>
+  <div class="header">
+    <h1 class="header-title">Summoner Profile</h1>
+    <button onclick="goBackToSearch()" class="back-button" style="background: #4b5563; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
+      ← Back to Search
+    </button>
+  </div>
+  <div class="profile-header">
+    <img src="https://static.wikia.nocookie.net/leagueoflegends/images/6/6c/ProfileIcon1732.png" alt="Profile" id = "profile-icon" class="profile-icon">
+    <span class="profile-lvl" id="profile-lvl">Loading...</span>
+    <div class="profile-info">
+      <div class="profile-info-top">
+        <span class="profile-name" id="profile-name">Loading...</span>
+        <span class="profile-tag" id="profile-tag">#Loading...</span>
+      </div>
+      <div class="profile-info-bottom">
+        <span class="profile-update">Updated</span>
+        <span class="profile-lastupdate" id="profile-lastupdate">Loading...</span>
+        <button onclick="refreshProfile()" class="refresh-button" style="background: #6366f1; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; cursor: pointer; margin-left: 1rem;">
+          🔄 Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="profile-container">
+    <div class="profile-tabs">
+      <span>SUMMARY</span>
+      <span>CHAMPIONS</span>
+      <span>LIVE GAME</span>
+    </div>
+    <div class="profile-content">
+      <div class="profile-sidebar"></div>
+      <div class="profile-main">
+        <div class="profile-main-top"></div>
+        <div class="profile-main-bottom">
+          <div class = "Wins"></div>
+          <div class = "Losses"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/user.js"></script>
+</body>
+</html>

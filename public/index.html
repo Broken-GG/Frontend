@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontend App</title>
+  <link rel="stylesheet" href="src/styles/main.css">
+  <link rel="stylesheet" href="src/styles/search.css">
+</head>
+<body>
+  <div id="root">
+    <div class="search-container">
+      <h1>Summoner Lookup</h1>
+      <form id="summonerSearchForm" class="search-form">
+        <div class="search-input-container">
+          <input 
+            type="text" 
+            id="summonerInput" 
+            placeholder="Enter Summoner Name#TagLine (e.g., Faker#GOON)" 
+            class="search-input"
+            required
+          />
+          <button type="submit" class="search-button" id="searchButton">
+            <span class="search-text">Search</span>
+            <span class="loading-spinner" style="display: none;">🔄</span>
+          </button>
+        </div>
+        <div class="search-examples">
+          <p>Examples: TFS MatzenDK#EUW, Shipulski#GOON, Faker#T1</p>
+        </div>
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+      </form>
+    </div>
+  </div>
+  <button id="testButton" style="margin-top: 20px;">Test Button to summoner</button>
+  <script src="src/index.js"></script>
+</body>
+</html>
