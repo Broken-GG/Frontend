@@ -1,6 +1,14 @@
 body {
   background: linear-gradient(to bottom right, rgba(255, 101, 101, 0.00) 0%, rgba(0, 0, 0, 0.20) 50%) bottom right / 50% 50% no-repeat, linear-gradient(to bottom left, rgba(255, 101, 101, 0.00) 0%, rgba(0, 0, 0, 0.20) 50%) bottom left / 50% 50% no-repeat, linear-gradient(to top left, rgba(255, 101, 101, 0.00) 0%, rgba(0, 0, 0, 0.20) 50%) top left / 50% 50% no-repeat, linear-gradient(to top right, rgba(255, 101, 101, 0.00) 0%, rgba(0, 0, 0, 0.20) 50%) top right / 50% 50% no-repeat, #103611;
   min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+* {
+  box-sizing: border-box; /* Ensure proper box model */
 }
 
 .header {
@@ -11,11 +19,12 @@ body {
   background: #166534;
   padding: 0.75rem 2rem;
   margin-bottom: 2rem;
+  box-sizing: border-box;
 }
 
 .header-title {
   color: #fff;
-  font-size: 2rem;
+  font-size: 1rem;
   font-weight: 300;
 }
 
@@ -34,6 +43,8 @@ body {
   max-width: 900px;
   width: 100%;
   margin: 2rem auto 0 auto;
+  padding: 0 1rem; /* Add some padding for mobile */
+  box-sizing: border-box;
 }
 
 .profile-header {
@@ -48,6 +59,7 @@ body {
   border-radius: 1rem;
   position: relative;
   box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  box-sizing: border-box;
 }
 
 .profile-header img {
@@ -182,20 +194,28 @@ body {
 }
 
 .Wins {
-  background: #2C64C6;
-  height: 30%;
+  background: rgba(31, 41, 55, 0.8); /* Changed back to dark theme */
   width: 100%;
   border-radius: 0.75rem;
-  display: inline-block;
-  margin-right: 4%;
+  display: block;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  min-height: 120px;
+  overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  max-height: 400px;
+  box-sizing: border-box;
 }
 
 .Losses {
   background: #C53B46;
-  height: 30%;
   width: 100%;
   border-radius: 0.75rem;
-  display: inline-block;
+  display: block;
+  padding: 1rem;
+  min-height: 120px;
+  overflow-y: auto;
+  max-height: 400px;
 }
 
 /* Loading states */
@@ -240,7 +260,7 @@ body {
   background: #1f2937;
   color: #fff;
   border: 1px solid #374151;
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1rem;
   border-radius: 0.5rem;
   cursor: pointer;
   font-size: 0.875rem;
@@ -270,5 +290,848 @@ body {
   .profile-container {
     margin: 1rem auto 0 auto;
     padding: 0 1rem;
+  }
+}
+
+/* Match History Styles - OP.GG Style (Unified List) */
+.match-history-header {
+  margin-bottom: 0.5rem;
+}
+
+.match-history-header h3 {
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: left;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.all-matches-container {
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.match-section-header {
+  margin-bottom: 0.5rem;
+}
+
+.match-section-header h3 {
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: left;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.match-item {
+  background: #1e2328;
+  border: none;
+  border-radius: 4px;
+  padding: 0;
+  margin-bottom: 2px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  min-height: 96px;
+  height: auto;
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+.match-item.wins-match {
+  border-left: 4px solid #4171d8;
+  background: linear-gradient(90deg, rgba(65, 113, 216, 0.1) 0%, transparent 20%);
+}
+
+.match-item.losses-match {
+  border-left: 4px solid #c89aa6;
+  background: linear-gradient(90deg, rgba(200, 154, 166, 0.1) 0%, transparent 100%);
+}
+
+.match-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: scale(1.001);
+}
+
+.match-item:last-child {
+  margin-bottom: 0;
+}
+
+.match-item.first-match {
+  border-radius: 0;
+}
+
+.match-item.last-match {
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.match-content {
+  display: flex;
+  align-items: center;
+  color: white;
+  font-size: 0.75rem;
+  padding: 12px 16px;
+  gap: 20px;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  min-height: 96px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.match-game-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 100px;
+  gap: 4px;
+}
+
+.match-game-type {
+  font-size: 12px;
+  color: #9aa4af;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.match-result-indicator {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 4px;
+  text-align: center;
+  min-width: 60px;
+}
+
+.match-result-indicator.victory {
+  background: #4171d8;
+  color: white;
+}
+
+.match-result-indicator.defeat {
+  background: #c89aa6;
+  color: white;
+}
+
+.match-game-duration {
+  font-size: 12px;
+  color: #7c828d;
+}
+
+.match-timeline {
+  font-size: 11px;
+  color: #7c828d;
+}
+
+.match-result-indicator.victory {
+  background: #5383e8;
+  color: white;
+}
+
+.match-result-indicator.defeat {
+  background: #e84057;
+  color: white;
+}
+
+.match-champion-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
+}
+
+.champion-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #463714;
+}
+
+.champion-level {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: #1e2328;
+  color: #f0e6d2;
+  font-size: 10px;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #463714;
+}
+
+.champion-info-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.champion-name {
+  font-weight: 500;
+  color: #f0e6d2;
+  font-size: 11px;
+  text-align: center;
+}
+
+.match-spells-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 60px;
+  /* Placeholder for summoner spells and items */
+}
+
+.match-kda-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.kda {
+  font-weight: 700;
+  font-size: 16px;
+  color: #f0e6d2;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.kda-ratio {
+  font-size: 12px;
+  color: #9aa4af;
+  font-weight: 500;
+  text-align: center;
+}
+
+.kda-ratio.good {
+  color: #00d4aa;
+}
+
+.kda-ratio.average {
+  color: #f0e6d2;
+}
+
+.kda-ratio.poor {
+  color: #e84057;
+}
+
+.match-stats {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: #9aa4af;
+  text-align: center;
+}
+
+.cs-score {
+  font-size: 11px;
+  color: #9aa4af;
+}
+
+.vision-score {
+  font-size: 11px;
+  color: #9aa4af;
+}
+
+.kda-ratio.good {
+  color: #00d4aa;
+}
+
+.kda-ratio.average {
+  color: #f0e6d2;
+}
+
+.kda-ratio.poor {
+  color: #e84057;
+}
+
+.match-additional-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 80px;
+}
+
+.cs-score {
+  font-size: 11px;
+  color: #9aa4af;
+}
+
+.vision-score {
+  font-size: 11px;
+  color: #9aa4af;
+}
+
+.match-timeline {
+  font-size: 11px;
+  color: #7c828d;
+  margin-left: auto;
+  text-align: right;
+}
+
+/* Team Composition Styles - OP.GG Layout */
+.teams-composition {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  flex: 1;
+  min-width: 300px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  height: auto;
+  min-height: 48px;
+}
+
+.team {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(0);
+  min-height: 40px;
+}
+
+.team:hover {
+  transform: translateY(-1px);
+}
+
+.team-player {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 0;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  min-height: 20px;
+}
+
+.team-champion-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  object-fit: cover;
+  border: 1px solid #463714;
+}
+
+.team-player-name {
+  font-size: 10px;
+  color: #9aa4af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70px;
+}
+
+.vs-divider {
+  font-size: 10px;
+  color: #7c828d;
+  font-weight: 600;
+  text-align: center;
+  min-width: 20px;
+}
+
+.team-1 .team-player-name {
+  color: #5383e8;
+}
+
+.team-2 .team-player-name {
+  color: #e84057;
+}
+
+/* Container styling for match sections */
+.Wins {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.Losses {
+  display: none; /* Hide the losses container since we're using unified view */
+}
+
+.Wins .match-section-header h3 {
+  background: rgba(83, 131, 232, 0.2);
+  color: #5383e8;
+}
+
+.Losses .match-section-header h3 {
+  background: rgba(232, 64, 87, 0.2);
+  color: #e84057;
+}
+
+/* Loading and error states for matches */
+.loading-matches, .match-error, .no-matches {
+  text-align: center;
+  color: white;
+  padding: 2rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.match-error {
+  background: rgba(220, 38, 38, 0.2);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.loading-matches {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Responsive match history */
+@media (max-width: 768px) {
+  .match-content {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .match-game-info {
+    min-width: 60px;
+    order: 1;
+  }
+  
+  .match-champion-info {
+    min-width: 80px;
+    gap: 6px;
+    order: 2;
+  }
+  
+  .match-kda-section {
+    min-width: 70px;
+    order: 3;
+  }
+  
+  .match-additional-stats {
+    min-width: 50px;
+    order: 4;
+  }
+  
+  .teams-composition {
+    min-width: 100%;
+    gap: 8px;
+    order: 5;
+    flex-wrap: wrap;
+  }
+  
+  .match-timeline {
+    font-size: 9px;
+    order: 6;
+    margin-left: 0;
+    text-align: left;
+  }
+  
+  .team-champion-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .team-player-name {
+    font-size: 9px;
+    max-width: 60px;
+  }
+  
+  .vs-divider {
+    font-size: 9px;
+    min-width: 15px;
+  }
+  
+  .match-game-type {
+    font-size: 10px;
+  }
+  
+  .match-game-duration {
+    font-size: 10px;
+  }
+  
+  .champion-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .champion-level {
+    font-size: 9px;
+    width: 14px;
+    height: 14px;
+  }
+  
+  .champion-name {
+    font-size: 11px;
+  }
+  
+  .kda {
+    font-size: 12px;
+  }
+  
+  .kda-ratio {
+    font-size: 10px;
+  }
+  
+  .cs-score, .vision-score {
+    font-size: 10px;
+  }
+  
+  .match-result-indicator {
+    font-size: 10px;
+    padding: 1px 6px;
+    min-width: 40px;
+  }
+}
+
+/* Loading skeleton animations */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.loading-skeleton {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background-size: 468px 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.match-item.loading {
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid rgba(255, 255, 255, 0.1);
+}
+
+.match-item.loading .match-content {
+  opacity: 0.7;
+}
+
+/* Smooth image loading */
+img {
+  transition: opacity 0.3s ease;
+}
+
+img:not([src]), img[src=""] {
+  opacity: 0;
+}
+
+/* OP.GG Style Match History */
+.match-history-header {
+  margin-bottom: 16px;
+}
+
+.match-history-header h3 {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Remove the matches-list container since we're adding directly to .Wins */
+.matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Ensure the matches container displays properly */
+.matches {
+  display: flex;
+  flex-direction: column;
+  gap: 0 !important;
+  background: transparent !important;
+  padding: 1rem !important;
+  border-radius: 0.75rem;
+  overflow: visible !important;
+  max-height: none !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.match-card {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  padding: 16px;
+  min-height: 96px;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.match-card:hover {
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.match-card.victory {
+  background: linear-gradient(90deg, rgba(30, 144, 255, 0.2) 0%, rgba(30, 144, 255, 0.05) 100%);
+  border-left: 6px solid #1e90ff;
+}
+
+.match-card.defeat {
+  background: linear-gradient(90deg, rgba(255, 71, 87, 0.2) 0%, rgba(255, 71, 87, 0.05) 100%);
+  border-left: 6px solid #ff4757;
+}
+
+.match-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  margin-right: 16px;
+}
+
+.game-type {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.time-ago {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.game-result {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-bottom: 4px;
+}
+
+.game-result.win {
+  background: #1e90ff;
+  color: white;
+}
+
+.game-result.loss {
+  background: #ff4757;
+  color: white;
+}
+
+.game-duration {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.champion-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.champion-container {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.champion-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.summoner-spells {
+  display: flex;
+  gap: 2px;
+}
+
+.spell-placeholder {
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.items-section {
+  margin-right: 16px;
+}
+
+.items-row {
+  display: flex;
+  gap: 2px;
+}
+
+.item-slot, .trinket-slot {
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.trinket-slot {
+  margin-left: 4px;
+}
+
+.stats-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+  margin-right: 16px;
+}
+
+.kda {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.kda-numbers {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+}
+
+.kda-ratio {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.cs-vision {
+  text-align: center;
+}
+
+.cs-vision div {
+  font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+.teams-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.team-vs-team {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.team {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.blue-team {
+  border-right: 1px solid rgba(30, 144, 255, 0.3);
+  padding-right: 8px;
+}
+
+.red-team {
+  border-left: 1px solid rgba(255, 71, 87, 0.3);
+  padding-left: 8px;
+}
+
+.vs-divider {
+  font-size: 10px;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.team-player {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 0;
+}
+
+.team-champion-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.player-name {
+  font-size: 11px;
+  color: #d1d5db;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+.team-player.searched-player {
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+.team-player.searched-player .player-name {
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.no-matches {
+  text-align: center;
+  padding: 40px;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .match-card {
+    flex-direction: column;
+    padding: 16px 12px;
+    min-height: auto;
+  }
+  
+  .match-info, .champion-section, .items-section, .stats-section {
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+  
+  .teams-section {
+    width: 100%;
+  }
+  
+  .team-vs-team {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .blue-team, .red-team {
+    border: none;
+    padding: 0;
   }
 }

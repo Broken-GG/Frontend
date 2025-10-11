@@ -11,6 +11,7 @@ const config = {
       userStats: (userId) => `/users/${userId}/stats`,
       userMatches: (userId) => `/users/${userId}/matches`,
       summonerInfo: (summonerName, tagline) => `/SummonerInfo/${summonerName}/${tagline}`,
+      matchHistory: (puuid) => `/MatchInfo/${puuid}`,
     },
     
     // Request timeout in milliseconds
