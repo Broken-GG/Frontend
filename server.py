@@ -29,7 +29,7 @@ PORT = 3000
 Handler = MyHTTPRequestHandler
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print(f"🚀 Server running at http://localhost:{PORT}/")
+    print(f"🚀 Server running at http://localhost:{PORT}/public/")
     print(f"📁 Serving from: {Path.cwd()}")
     print("\nPress Ctrl+C to stop the server")
     try:

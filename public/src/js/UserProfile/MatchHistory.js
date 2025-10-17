@@ -55,8 +55,12 @@ export class MatchDisplayManager {
     container.innerHTML = '';
     
     const last10Matches = matches.slice(0, 10);
-    const wins = last10Matches.filter(match => match.Victory === true).length;
+    
+    // Count wins by checking the match.victory property
+    const wins = last10Matches.filter(match => match.victory === true || match.Victory === true).length;
     const losses = last10Matches.length - wins;
+    
+    console.log('📊 Match stats - Total:', last10Matches.length, 'Wins:', wins, 'Losses:', losses);
     
     // Add header
     this.addMatchHistoryHeader(container, last10Matches.length, wins, losses);
@@ -82,7 +86,8 @@ export class MatchDisplayManager {
   static addMatchHistoryHeader(container, total, wins, losses) {
     const header = document.createElement('div');
     header.className = 'match-history-header';
-    header.innerHTML = `<h3>Recent Games (${total}G ${wins}W ${losses}L)</h3>`;
+    const winRate = total > 0 ? ((wins / total) * 100).toFixed(2) : 0;
+    header.innerHTML = `<h3>Recent Games (${total}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>`;
     container.appendChild(header);
   }
 
@@ -93,7 +98,10 @@ export class MatchDisplayManager {
    */
   static createMatchCard(match) {
     const mainPlayer = match.MainPlayer || match.mainPlayer;
-    const isWin = match.Victory === true;
+    
+    // Win status is in the match object, not mainPlayer
+    // Check both Victory (uppercase) and victory (lowercase)
+    const isWin = match.victory === true || match.Victory === true;
     const matchId = match.MatchId || match.matchId || Date.now();
     
     if (!mainPlayer) {
@@ -102,6 +110,7 @@ export class MatchDisplayManager {
     
     const matchCard = document.createElement('div');
     matchCard.className = `match-card ${isWin ? 'victory' : 'defeat'}`;
+    console.log('✅ Match card created - isWin:', isWin, 'match.victory:', match.victory, 'className:', matchCard.className);
     matchCard.setAttribute('data-match-id', matchId);
     
     matchCard.innerHTML = this.generateMatchCardHTML(match, mainPlayer, isWin);
@@ -266,6 +275,30 @@ export class MatchDisplayManager {
       return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
     } else {
       return 'Just now';
+    }
+  }
+
+  static displayMainPlayerItems(player) {
+    const isMainPlayer = player.IsMainPlayer === true;
+    const itemBaseURL = window.CONFIG?.IMAGES?.CHAMPION_BASE_URL || 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/champion';
+    if (!isMainPlayer) return;
+
+    for (let i = 1; i <= 6; i++) {
+      const item = player[`Item${i}`];
+      if (item) {
+        const itemImageUrl = `${itemBaseURL}/${item}.png`;
+        const itemSlot = document.querySelector(`.item-slot-${i}`);
+        if (itemSlot) {
+          itemSlot.innerHTML = `<img src="${itemImageUrl}" alt="Item ${i}" class="item-icon"
+                                 onerror="this.src='${itemBaseURL}/Unknown.png'">`;
+        }
+      }
+      else {
+        const itemSlot = document.querySelector(`.item-slot-${i}`);
+        if (itemSlot) {
+          itemSlot.innerHTML = '';
+        }
+      }
     }
   }
 
