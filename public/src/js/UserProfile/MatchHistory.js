@@ -100,7 +100,6 @@ export class MatchDisplayManager {
     const mainPlayer = match.MainPlayer || match.mainPlayer;
     
     // Win status is in the match object, not mainPlayer
-    // Check both Victory (uppercase) and victory (lowercase)
     const isWin = match.victory === true || match.Victory === true;
     const matchId = match.MatchId || match.matchId || Date.now();
     
@@ -151,6 +150,9 @@ export class MatchDisplayManager {
     // Get champion base URL from CONFIG if available, otherwise use default
     const championBaseUrl = window.CONFIG?.IMAGES?.CHAMPION_BASE_URL || 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/champion';
     
+    // Generate items HTML before the template literal
+    const itemsHTML = this.generateItemSlotsHTML(mainPlayer);
+    
     return `
       <div class="match-info">
         <div class="game-type">${gameMode}</div>
@@ -172,8 +174,7 @@ export class MatchDisplayManager {
       
       <div class="items-section">
         <div class="items-row">
-          ${'<div class="item-slot"></div>'.repeat(6)}
-          <div class="trinket-slot"></div>
+          ${itemsHTML}
         </div>
       </div>
       
@@ -278,28 +279,42 @@ export class MatchDisplayManager {
     }
   }
 
-  static displayMainPlayerItems(player) {
-    const isMainPlayer = player.IsMainPlayer === true;
-    const itemBaseURL = window.CONFIG?.IMAGES?.CHAMPION_BASE_URL || 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/champion';
-    if (!isMainPlayer) return;
-
-    for (let i = 1; i <= 6; i++) {
-      const item = player[`Item${i}`];
-      if (item) {
-        const itemImageUrl = `${itemBaseURL}/${item}.png`;
-        const itemSlot = document.querySelector(`.item-slot-${i}`);
-        if (itemSlot) {
-          itemSlot.innerHTML = `<img src="${itemImageUrl}" alt="Item ${i}" class="item-icon"
-                                 onerror="this.src='${itemBaseURL}/Unknown.png'">`;
-        }
-      }
-      else {
-        const itemSlot = document.querySelector(`.item-slot-${i}`);
-        if (itemSlot) {
-          itemSlot.innerHTML = '';
-        }
+  /**
+   * Generates item slots HTML for a player
+   * @param {Object} player - Player data with item0-item6 properties
+   * @returns {string} HTML string for item slots
+   */
+  /**
+   * Generates item slots HTML for a player
+   * @param {Object} player - Player data with item0-item6 properties
+   * @returns {string} HTML string for item slots
+   */
+  static generateItemSlotsHTML(player) {
+    // Original: show items in their original slots (item0-item5), gaps preserved, Data Dragon only
+    const itemBaseUrl = window.CONFIG?.IMAGES?.ITEM_BASE_URL || 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/item';
+    let itemsHTML = '';
+    for (let i = 0; i <= 5; i++) {
+      const itemId = player[`item${i}`] || player[`Item${i}`];
+      if (itemId && itemId !== 0) {
+        itemsHTML += `<div class="item-slot">
+          <img src="${itemBaseUrl}/${itemId}.png" alt="Item ${itemId}" class="item-icon"
+               onerror="this.src='${itemBaseUrl}/0.png'">
+        </div>`;
+      } else {
+        itemsHTML += `<div class="item-slot"></div>`;
       }
     }
+    // Item 6 is the trinket (vision ward slot)
+    const trinketId = player.item6 || player.Item6;
+    if (trinketId && trinketId !== 0) {
+      itemsHTML += `<div class="trinket-slot">
+        <img src="${itemBaseUrl}/${trinketId}.png" alt="Trinket ${trinketId}" class="item-icon"
+             onerror="this.src='${itemBaseUrl}/0.png'">
+      </div>`;
+    } else {
+      itemsHTML += `<div class="trinket-slot"></div>`;
+    }
+    return itemsHTML;
   }
 
   /**

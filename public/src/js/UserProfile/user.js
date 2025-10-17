@@ -30,6 +30,7 @@ const CONFIG = {
   },
   IMAGES: {
     CHAMPION_BASE_URL: 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/champion',
+    ITEM_BASE_URL: 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/item',
     FALLBACK_ICONS: [
       'https://ddragon.leagueoflegends.com/cdn/14.20.1/img/profileicon/0.png',
       'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/profileicon/0.png',

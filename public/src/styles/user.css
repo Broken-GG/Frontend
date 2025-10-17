@@ -984,11 +984,21 @@ img:not([src]), img[src=""] {
 }
 
 .item-slot, .trinket-slot {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.item-slot img,
+.trinket-slot img {
+  width: 100% !important; 
+  height: 100% !important;
+  object-fit: cover;
+  display: block;
+  border-radius: 10px;
 }
 
 .trinket-slot {
