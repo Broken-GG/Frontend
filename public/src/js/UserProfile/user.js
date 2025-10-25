@@ -8,6 +8,7 @@ try {
 }
 
 import { loadMatchHistoryBySummoner, MatchDisplayManager } from './MatchHistory.js';
+import { getSidebarInfo, displayRankedInfo, displayMasteryInfo } from './SideBarInfo.js';
 
 console.log('✅ MatchHistory module imported successfully');
 console.log('✅ loadMatchHistoryBySummoner:', typeof loadMatchHistoryBySummoner);
@@ -45,7 +46,7 @@ const CONFIG = {
 // Make CONFIG available globally for MatchHistory module
 window.CONFIG = CONFIG;
 
-class UserPageService {
+export class UserPageService {
   constructor() {
     this.baseUrl = CONFIG.API.BASE_URL;
     this.fallbackUrl = CONFIG.API.FALLBACK_URL;
@@ -98,6 +99,18 @@ class UserPageService {
 
   async getMatchHistoryBySummoner(summonerName, tagLine) {
     return this.makeRequest(`/MatchInfo/summoner/${encodeURIComponent(summonerName)}/${encodeURIComponent(tagLine)}`, { 
+      method: 'GET' 
+    });
+  }
+
+  async getRankedInfo(puuid) {
+    return this.makeRequest(`/SidePanelInfo/ranked/${encodeURIComponent(puuid)}`, { 
+      method: 'GET' 
+    });
+  }
+
+  async getMasteryInfo(puuid) {
+    return this.makeRequest(`/SidePanelInfo/mastery/${encodeURIComponent(puuid)}`, { 
       method: 'GET' 
     });
   }
@@ -269,6 +282,7 @@ class ProfileDisplayManager {
 
 async function displaySummonerData(data, userService = null) {
   console.log('Displaying summoner data:', data);
+  console.log('Data keys:', Object.keys(data));
   
   ProfileDisplayManager.updateBasicInfo(data);
   ProfileDisplayManager.updateProfileIcon(data);
@@ -281,6 +295,41 @@ async function displaySummonerData(data, userService = null) {
   // Create userService if not provided
   if (!userService) {
     userService = new UserPageService();
+  }
+  
+  // Load sidebar info (ranked and mastery) - non-blocking
+  // Check for puuid with multiple possible property names (case-insensitive)
+  const puuid = data.puuid || data.Puuid || data.PUUID || data.pUUID || 
+                data.puuId || data.PuuId || data.PUUID;
+  
+  if (puuid) {
+    console.log('Loading sidebar info for puuid:', puuid);
+    // Don't await - load in background
+    getSidebarInfo(puuid)
+      .then(sidebarData => {
+        console.log('Sidebar data loaded:', sidebarData);
+        
+        // Display ranked info
+        if (sidebarData.ranked) {
+          displayRankedInfo(sidebarData.ranked);
+        }
+        
+        // Display mastery info
+        if (sidebarData.mastery) {
+          displayMasteryInfo(sidebarData.mastery);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to load sidebar info:', error);
+        // Display error state in sidebar
+        const sidebar = document.querySelector('.profile-sidebar');
+        if (sidebar) {
+          sidebar.innerHTML = '<div class="sidebar-section"><p class="unranked">Sidebar data unavailable</p></div>';
+        }
+      });
+  } else {
+    console.warn('No puuid found in summoner data, cannot load sidebar info');
+    console.warn('Available data properties:', Object.keys(data));
   }
   
   await loadMatchHistoryBySummoner(data.summonerName, data.tagline, userService);

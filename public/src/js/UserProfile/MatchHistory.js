@@ -176,18 +176,19 @@ export class MatchDisplayManager {
       </div>
 
       <div class="champion-section">
-        <div class="champion-container">
-          <img src="${championImageUrl}" alt="${championName}" class="champion-icon"
-               onerror="this.src='${championBaseUrl}/Unknown.png'">
+        <div>
+          <div class="champion-container">
+            <img src="${championImageUrl}" alt="${championName}" class="champion-icon"
+                 onerror="this.src='${championBaseUrl}/Unknown.png'">
+          </div>
+          <div class="summoner-spells">
+            ${spellsHTML}
+          </div>
         </div>
-        <div class="summoner-spells">
-          ${spellsHTML}
-        </div>
-      </div>
-
-      <div class="items-section">
-        <div class="items-row">
-          ${itemsHTML}
+        <div class="items-section">
+          <div class="items-row">
+            ${itemsHTML}
+          </div>
         </div>
       </div>
 

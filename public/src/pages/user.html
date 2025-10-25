@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Profile</title>
+  <link rel="icon" type="image/svg+xml" href="../../favicon.ico">
   <link rel="stylesheet" href="../styles/main.css">
   <link rel="stylesheet" href="../styles/UserProfile/user.css">
 </head>
 <body>
   <div class="header">
-    <h1 class="header-title">Summoner Profile</h1>
+    <button class="header-title" onclick="window.location.href='../../index.html'">BrokenGG</button>
   </div>
   <div class="profile-header">
-    <img src="https://static.wikia.nocookie.net/leagueoflegends/images/6/6c/ProfileIcon1732.png" alt="Profile" id = "profile-icon" class="profile-icon">
+    <img src="https://ddragon.leagueoflegends.com/cdn/14.20.1/img/profileicon/0.png" alt="Profile" id="profile-icon" class="profile-icon">
     <span class="profile-lvl" id="profile-lvl">Loading...</span>
     <div class="profile-info">
       <div class="profile-info-top">
@@ -29,9 +30,9 @@
   </div>
   <div class="profile-container">
     <div class="profile-tabs">
-      <button>SUMMARY</button>
-      <button>CHAMPIONS</button>
-      <button>LIVE GAME</button>
+      <button onclick="goToSummary()" class="tabs-buttons active">SUMMARY</button>
+      <button onclick="goToChampions()" class="tabs-buttons">CHAMPIONS</button>
+      <button onclick="goToLiveGame()" class="tabs-buttons">LIVE GAME</button>
     </div>
     <div class="profile-content">
       <div class="profile-sidebar"></div>

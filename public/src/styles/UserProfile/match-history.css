@@ -2,16 +2,16 @@
 
 /* Match History Header */
 .match-history-header {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;  /* 0.5rem * 1.2 */
 }
 
 .match-history-header h3 {
   color: white;
-  font-size: 1rem;
+  font-size: 1.2rem;  /* 1rem * 1.2 */
   font-weight: 600;
   margin: 0;
   text-align: left;
-  padding: 0.75rem;
+  padding: 0.9rem;  /* 0.75rem * 1.2 */
   background: rgba(255, 255, 255, 0.05);
   border-radius: 0.5rem 0.5rem 0 0;
 }
@@ -22,23 +22,24 @@
   flex-direction: column;
   gap: 0 !important;
   background: transparent !important;
-  padding: 1rem !important;
-  border-radius: 0.75rem;
+  padding: 0 !important;
+  border-radius: 0;
   overflow: visible !important;
   max-height: none !important;
   width: 100%;
   box-sizing: border-box;
+  margin: 0;
 }
 
 /* Match Card */
 .match-card {
   display: flex;
   align-items: center;
-  border-radius: 6px;
-  padding: 16px;
-  min-height: 96px;
+  border-radius: 7px;  /* 6px * 1.2 = 7.2px */
+  padding: 19px;  /* 16px * 1.2 */
+  min-height: 115px;  /* 96px * 1.2 */
   transition: all 0.2s ease;
-  margin-bottom: 12px;
+  margin-bottom: 14px;  /* 12px * 1.2 */
   border: 1px solid rgba(255, 255, 255, 0.1);
   width: 100%;
   box-sizing: border-box;
@@ -51,12 +52,12 @@
 
 .match-card.victory {
   background: linear-gradient(90deg, rgba(30, 144, 255, 0.2) 0%, rgba(30, 144, 255, 0.05) 100%);
-  border-left: 6px solid #1e90ff;
+  border-left: 7px solid #1e90ff;  /* 6px * 1.2 = 7.2px */
 }
 
 .match-card.defeat {
   background: linear-gradient(90deg, rgba(255, 71, 87, 0.2) 0%, rgba(255, 71, 87, 0.05) 100%);
-  border-left: 6px solid #ff4757;
+  border-left: 7px solid #ff4757;  /* 6px * 1.2 = 7.2px */
 }
 
 /* Match Info Section */
@@ -64,28 +65,28 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 80px;
-  margin-right: 16px;
+  min-width: 96px;  /* 80px * 1.2 */
+  margin-right: 19px;  /* 16px * 1.2 */
 }
 
 .game-type {
-  font-size: 12px;
+  font-size: 14px;  /* 12px * 1.2 = 14.4px */
   color: #9ca3af;
-  margin-bottom: 4px;
+  margin-bottom: 5px;  /* 4px * 1.2 */
 }
 
 .time-ago {
-  font-size: 11px;
+  font-size: 13px;  /* 11px * 1.2 = 13.2px */
   color: #6b7280;
-  margin-bottom: 4px;
+  margin-bottom: 5px;  /* 4px * 1.2 */
 }
 
 .game-result {
-  font-size: 12px;
+  font-size: 14px;  /* 12px * 1.2 = 14.4px */
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 3px;
-  margin-bottom: 4px;
+  padding: 2px 10px;  /* 2px, 8px * 1.2 = 9.6px */
+  border-radius: 4px;  /* 3px * 1.2 = 3.6px */
+  margin-bottom: 5px;  /* 4px * 1.2 */
 }
 
 .game-result.win {
@@ -99,7 +100,7 @@
 }
 
 .game-duration {
-  font-size: 11px;
+  font-size: 13px;  /* 11px * 1.2 = 13.2px */
   color: #9ca3af;
 }
 
@@ -107,33 +108,43 @@
 .champion-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-right: 16px;
+  align-items: flex-start;
+  gap: 5px;  /* 4px * 1.2 */
+  margin-right: 19px;  /* 16px * 1.2 */
+}
+
+.champion-section > div:first-child {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;  /* 4px * 1.2 */
+  align-items: flex-start;
 }
 
 .champion-container {
   position: relative;
-  margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
 .champion-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 58px;  /* 48px * 1.2 */
+  height: 58px;  /* 48px * 1.2 */
+  border-radius: 10px;  /* 8px * 1.2 */
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Summoner Spells */
 .summoner-spells {
   display: flex;
-  gap: 2px;
+  flex-direction: column;
+  gap: 5px;  /* 4px * 1.2 */
+  flex-shrink: 0;
 }
 
 .spell-slot {
-  width: 20px;
-  height: 20px;
+  width: 26px;  /* 22px * 1.2 = 26.4px */
+  height: 26px;  /* 22px * 1.2 = 26.4px */
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 5px;  /* 4px * 1.2 */
   border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
 }
@@ -146,21 +157,25 @@
 }
 
 /* Items Section */
-.items-section {
-  margin-right: 16px;
+.champion-section .items-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 0;
 }
 
 .items-row {
   display: flex;
+  flex-wrap: nowrap;
   gap: 2px;
 }
 
 .item-slot,
 .trinket-slot {
-  width: 32px;
-  height: 32px;
+  width: 26px;  /* 22px * 1.2 = 26.4px */
+  height: 26px;  /* 22px * 1.2 = 26.4px */
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border-radius: 5px;  /* 4px * 1.2 */
   border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
 }
@@ -171,11 +186,11 @@
   height: 100% !important;
   object-fit: cover;
   display: block;
-  border-radius: 10px;
+  border-radius: 5px;  /* 4px * 1.2 */
 }
 
 .trinket-slot {
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
 /* Stats Section */
