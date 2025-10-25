@@ -15,6 +15,14 @@
   color: #fff;
   font-size: 1rem;
   font-weight: 300;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.header-title:hover {
+  opacity: 0.8;
 }
 
 .header-search {
@@ -30,7 +38,7 @@
 
 /* Profile Container */
 .profile-container {
-  max-width: 900px;
+  max-width: 1080px;  /* 900px * 1.2 */
   width: 100%;
   margin: 2rem auto 0 auto;
   padding: 0 1rem;
@@ -40,13 +48,13 @@
 /* Profile Header */
 .profile-header {
   background: rgba(31, 41, 55, 0.95);
-  max-width: 900px;
+  max-width: 1080px;  /* 900px * 1.2 */
   width: 100%;
   margin: 2rem auto 1.5rem auto;
-  padding: 2rem 2.5rem 2rem 2rem;
+  padding: 2.4rem 3rem 2.4rem 2.4rem;  /* 2rem * 1.2, 2.5rem * 1.2 */
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 2.4rem;  /* 2rem * 1.2 */
   border-radius: 1rem;
   position: relative;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
@@ -54,8 +62,8 @@
 }
 
 .profile-header img {
-  width: 96px;
-  height: 96px;
+  width: 115px;  /* 96px * 1.2 */
+  height: 115px;  /* 96px * 1.2 */
   border-radius: 4rem;
   object-fit: cover;
   position: relative;
@@ -65,14 +73,14 @@
 
 .profile-lvl {
   position: absolute;
-  left: 2.25rem;
-  bottom: 1.5rem;
+  left: 2.7rem;  /* 2.25rem * 1.2 */
+  bottom: 1.8rem;  /* 1.5rem * 1.2 */
   background: #14532d;
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.2rem;  /* 1rem * 1.2 */
   font-weight: 600;
-  padding: 2px 16px 2px 12px;
-  border-radius: 0.5rem;
+  padding: 3px 19px 3px 14px;  /* 2px * 1.2, 16px * 1.2, 12px * 1.2 */
+  border-radius: 0.6rem;  /* 0.5rem * 1.2 */
   z-index: 2;
   pointer-events: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
@@ -97,7 +105,7 @@
 
 .profile-name {
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 1.8rem;  /* 1.5rem * 1.2 */
   font-weight: 700;
   font-style: italic;
   margin-right: 0.1rem;
@@ -106,7 +114,7 @@
 
 .profile-tag {
   color: #bdbdbd;
-  font-size: 1.5rem;
+  font-size: 1.8rem;  /* 1.5rem * 1.2 */
   margin-right: 0.2rem;
   line-height: 1.1;
 }
@@ -157,10 +165,10 @@
 .profile-tabs button,
 .profile-tabs .tabs-buttons {
   color: rgba(255, 255, 255, 0.6);
-  font-size: 0.875rem;
+  font-size: 1.05rem;  /* 0.875rem * 1.2 */
   font-weight: 600;
   letter-spacing: 0.05em;
-  padding: 1rem 2rem;
+  padding: 1.2rem 2.4rem;  /* 1rem * 1.2, 2rem * 1.2 */
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -235,11 +243,134 @@
 
 .profile-sidebar {
   background: rgba(31, 41, 55, 0.8);
-  width: 10rem;
+  width: 12rem;  /* 10rem * 1.2 */
   height: fit-content;
-  min-height: 18rem;
+  min-height: 21.6rem;  /* 18rem * 1.2 */
   border-radius: 0.75rem;
   flex-shrink: 0;
+  padding: 1.2rem;  /* 1rem * 1.2 */
+  box-sizing: border-box;
+}
+
+/* Sidebar Sections */
+.sidebar-section {
+  margin-bottom: 1.8rem;  /* 1.5rem * 1.2 */
+}
+
+.sidebar-section:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-section h3 {
+  color: #ffffff;
+  font-size: 1.05rem;  /* 0.875rem * 1.2 */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.9rem;  /* 0.75rem * 1.2 */
+  padding-bottom: 0.6rem;  /* 0.5rem * 1.2 */
+  border-bottom: 2px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Ranked Info */
+.rank-info {
+  padding: 0.6rem;  /* 0.5rem * 1.2 */
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  margin-bottom: 0.9rem;  /* 0.75rem * 1.2 */
+}
+
+.rank-info:last-child {
+  margin-bottom: 0;
+}
+
+.rank-tier {
+  color: #22c55e;
+  font-size: 1.05rem;  /* 0.875rem * 1.2 */
+  font-weight: 700;
+  margin-bottom: 0.3rem;  /* 0.25rem * 1.2 */
+}
+
+.rank-lp {
+  color: #d1d5db;
+  font-size: 0.9rem;  /* 0.75rem * 1.2 */
+  margin-bottom: 0.3rem;  /* 0.25rem * 1.2 */
+}
+
+.rank-winrate {
+  color: #9ca3af;
+  font-size: 0.84rem;  /* 0.7rem * 1.2 */
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.rank-winrate-percent {
+  color: #22c55e;
+  font-size: 0.84rem;  /* 0.7rem * 1.2 */
+  font-weight: 600;
+  display: inline-block;
+}
+
+.unranked {
+  color: #6b7280;
+  font-size: 1.05rem;  /* 0.875rem * 1.2 */
+  font-style: italic;
+  text-align: center;
+  padding: 1.2rem 0.6rem;  /* 1rem * 1.2, 0.5rem * 1.2 */
+}
+
+/* Mastery Info */
+.mastery-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;  /* 0.5rem * 1.2 */
+  padding: 0.6rem;  /* 0.5rem * 1.2 */
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  margin-bottom: 0.6rem;  /* 0.5rem * 1.2 */
+  transition: background 0.2s ease;
+}
+
+.mastery-item:last-child {
+  margin-bottom: 0;
+}
+
+.mastery-item:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.mastery-champ-icon {
+  width: 38px;  /* 32px * 1.2 */
+  height: 38px;  /* 32px * 1.2 */
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.mastery-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.mastery-name {
+  color: #ffffff;
+  font-size: 0.9rem;  /* 0.75rem * 1.2 */
+  font-weight: 600;
+  margin-bottom: 0.15rem;  /* 0.125rem * 1.2 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mastery-level {
+  color: #22c55e;
+  font-size: 0.84rem;  /* 0.7rem * 1.2 */
+  font-weight: 500;
+}
+
+.mastery-points {
+  color: #9ca3af;
+  font-size: 0.78rem;  /* 0.65rem * 1.2 */
 }
 
 .profile-main {
