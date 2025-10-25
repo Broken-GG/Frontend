@@ -10,9 +10,6 @@
 <body>
   <div class="header">
     <h1 class="header-title">Summoner Profile</h1>
-    <button onclick="goBackToSearch()" class="back-button" style="background: #4b5563; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
-      ← Back to Search
-    </button>
   </div>
   <div class="profile-header">
     <img src="https://static.wikia.nocookie.net/leagueoflegends/images/6/6c/ProfileIcon1732.png" alt="Profile" id = "profile-icon" class="profile-icon">
@@ -23,9 +20,8 @@
         <span class="profile-tag" id="profile-tag">#Loading...</span>
       </div>
       <div class="profile-info-bottom">
-        <span class="profile-update">Updated</span>
+        <button onclick="manualUpdateProfile()" class="refresh-button">
         <span class="profile-lastupdate" id="profile-lastupdate">Loading...</span>
-        <button onclick="manualUpdateProfile()" class="refresh-button" style="background: #6366f1; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; cursor: pointer; margin-left: 1rem;">
           🔄 Update
         </button>
       </div>
