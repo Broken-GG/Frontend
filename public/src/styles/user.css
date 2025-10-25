@@ -126,15 +126,20 @@ body {
   margin-top: 0.2rem;
 }
 
-.profile-update {
-  display: inline-block;
+.refresh-button {
   background: #6366f1;
-  color: #fff;
-  font-size: 1rem;
-  padding: 0.3rem 1.2rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  margin-right: -0.7rem;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: background 0.2s ease;
+}
+
+.refresh-button:hover {
+  background: #4f46e5;
 }
 
 .profile-lastupdate {
