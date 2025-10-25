@@ -144,7 +144,11 @@ export class MatchDisplayManager {
     const kills = mainPlayer.Kills || mainPlayer.kills || 0;
     const deaths = mainPlayer.Deaths || mainPlayer.deaths || 0;
     const assists = mainPlayer.Assists || mainPlayer.assists || 0;
-    const kdaText = mainPlayer.KDA || mainPlayer.kda || `${kills}/${deaths}/${assists}`;
+    
+    // Calculate KDA ratio: (kills + assists) / deaths (or "Perfect" if no deaths)
+    const kdaRatio = deaths === 0 
+      ? 'Perfect' 
+      : ((kills + assists) / deaths).toFixed(2);
     
     const parsedGameDate = gameDate ? new Date(gameDate) : new Date();
     const duration = gameDurationMinutes ? `${gameDurationMinutes}:00` : '30:00';
@@ -190,7 +194,7 @@ export class MatchDisplayManager {
       <div class="stats-section">
         <div class="kda">
           <span class="kda-numbers">${kills}/${deaths}/${assists}</span>
-          <span class="kda-ratio">${kdaText}</span>
+          <span class="kda-ratio">${kdaRatio} KDA</span>
         </div>
         <div class="cs-vision">
           <div>CS ${cs} (${csPerMin})</div>
