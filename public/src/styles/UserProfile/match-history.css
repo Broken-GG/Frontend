@@ -22,12 +22,13 @@
   flex-direction: column;
   gap: 0 !important;
   background: transparent !important;
-  padding: 1rem !important;
-  border-radius: 0.75rem;
+  padding: 0 !important;
+  border-radius: 0;
   overflow: visible !important;
   max-height: none !important;
   width: 100%;
   box-sizing: border-box;
+  margin: 0;
 }
 
 /* Match Card */
@@ -107,33 +108,43 @@
 .champion-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  gap: 4px;
   margin-right: 16px;
+}
+
+.champion-section > div:first-child {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: flex-start;
 }
 
 .champion-container {
   position: relative;
-  margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
 .champion-icon {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
+  border-radius: 8px;
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Summoner Spells */
 .summoner-spells {
   display: flex;
-  gap: 2px;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .spell-slot {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
 }
@@ -146,21 +157,25 @@
 }
 
 /* Items Section */
-.items-section {
-  margin-right: 16px;
+.champion-section .items-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 0;
 }
 
 .items-row {
   display: flex;
+  flex-wrap: nowrap;
   gap: 2px;
 }
 
 .item-slot,
 .trinket-slot {
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
 }
@@ -171,11 +186,11 @@
   height: 100% !important;
   object-fit: cover;
   display: block;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .trinket-slot {
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
 /* Stats Section */
