@@ -609,13 +609,7 @@ body {
   gap: 1px;
   flex: 1;
   opacity: 1;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: translateY(0);
   min-height: 40px;
-}
-
-.team:hover {
-  transform: translateY(-1px);
 }
 
 .team-player {

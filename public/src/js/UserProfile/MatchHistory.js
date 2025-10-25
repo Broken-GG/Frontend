@@ -26,11 +26,18 @@ export async function loadMatchHistoryBySummoner(summonerName, tagLine, userServ
  * Match Display Manager - Handles all match history display logic
  */
 export class MatchDisplayManager {
+  static isRendering = false;
+  
   /**
    * Displays match history data
    * @param {Array} matchData - Array of match objects
    */
   static displayMatchHistory(matchData) {
+    if (this.isRendering) {
+      console.warn('⚠️ Already rendering match history, skipping...');
+      return;
+    }
+    
     console.log('Displaying match history:', matchData?.length || 0, 'matches');
     
     if (!Array.isArray(matchData) || matchData.length === 0) {
@@ -38,7 +45,9 @@ export class MatchDisplayManager {
       return;
     }
     
+    this.isRendering = true;
     this.displayMatchList(matchData);
+    this.isRendering = false;
   }
 
   /**
@@ -142,17 +151,18 @@ export class MatchDisplayManager {
     const timeAgo = this.getTimeAgo(parsedGameDate);
     
     // Mock additional stats
-    const cs = Math.floor(Math.random() * 200) + 100;
-    const vision = Math.floor(Math.random() * 30) + 10;
+    const cs = mainPlayer.CS || mainPlayer.cs || 0;
+    const vision = mainPlayer.VisionScore || mainPlayer.visionScore || 0;
     const gameMinutes = gameDurationMinutes || 30;
     const csPerMin = (cs / gameMinutes).toFixed(1);
-    
+
     // Get champion base URL from CONFIG if available, otherwise use default
     const championBaseUrl = window.CONFIG?.IMAGES?.CHAMPION_BASE_URL || 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/champion';
     
-    // Generate items HTML before the template literal
+    // Generate items and summoner spells HTML before the template literal
     const itemsHTML = this.generateItemSlotsHTML(mainPlayer);
-    
+    const spellsHTML = this.generateSummonerSpellsHTML(mainPlayer);
+
     return `
       <div class="match-info">
         <div class="game-type">${gameMode}</div>
@@ -160,24 +170,23 @@ export class MatchDisplayManager {
         <div class="game-result ${isWin ? 'win' : 'loss'}">${isWin ? 'Victory' : 'Defeat'}</div>
         <div class="game-duration">${duration}</div>
       </div>
-      
+
       <div class="champion-section">
         <div class="champion-container">
-          <img src="${championImageUrl}" alt="${championName}" class="champion-icon" 
+          <img src="${championImageUrl}" alt="${championName}" class="champion-icon"
                onerror="this.src='${championBaseUrl}/Unknown.png'">
         </div>
         <div class="summoner-spells">
-          <div class="spell-placeholder"></div>
-          <div class="spell-placeholder"></div>
+          ${spellsHTML}
         </div>
       </div>
-      
+
       <div class="items-section">
         <div class="items-row">
           ${itemsHTML}
         </div>
       </div>
-      
+
       <div class="stats-section">
         <div class="kda">
           <span class="kda-numbers">${kills}/${deaths}/${assists}</span>
@@ -188,7 +197,7 @@ export class MatchDisplayManager {
           <div>Vision ${vision}</div>
         </div>
       </div>
-      
+
       <div class="teams-section">
         ${this.createTeamsDisplay(match)}
       </div>
@@ -201,14 +210,14 @@ export class MatchDisplayManager {
    * @returns {string} HTML string for teams display
    */
   static createTeamsDisplay(match) {
-    const allPlayers = match.AllPlayers || [];
+    const allPlayers = match.AllPlayers || match.allPlayers || [];
     
     if (allPlayers.length === 0) {
       return '<div class="team-vs-team"><div class="no-team-data">No team data available</div></div>';
     }
     
-    const team1 = allPlayers.filter(p => p.TeamId === 100);
-    const team2 = allPlayers.filter(p => p.TeamId === 200);
+    const team1 = allPlayers.filter(p => (p.TeamId || p.teamId) === 100);
+    const team2 = allPlayers.filter(p => (p.TeamId || p.teamId) === 200);
     
     return `
       <div class="team-vs-team">
@@ -229,10 +238,10 @@ export class MatchDisplayManager {
    * @returns {string} HTML string for player display
    */
   static createPlayerDisplay(player) {
-    const championName = player.ChampionName || 'Unknown';
-    const summonerName = player.SummonerName || 'Player';
-    const championImageUrl = player.ChampionImageUrl || this.getChampionImageUrl(championName);
-    const isMainPlayer = player.IsMainPlayer === true;
+    const championName = player.ChampionName || player.championName || 'Unknown';
+    const summonerName = player.SummonerName || player.summonerName || 'Player';
+    const championImageUrl = player.ChampionImageUrl || player.championImageUrl || this.getChampionImageUrl(championName);
+    const isMainPlayer = player.IsMainPlayer === true || player.isMainPlayer === true;
     
     // Get champion base URL from CONFIG if available, otherwise use default
     const championBaseUrl = window.CONFIG?.IMAGES?.CHAMPION_BASE_URL || 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/champion';
@@ -279,26 +288,46 @@ export class MatchDisplayManager {
     }
   }
 
-  /**
-   * Generates item slots HTML for a player
-   * @param {Object} player - Player data with item0-item6 properties
-   * @returns {string} HTML string for item slots
-   */
-  /**
-   * Generates item slots HTML for a player
-   * @param {Object} player - Player data with item0-item6 properties
-   * @returns {string} HTML string for item slots
-   */
+  static generateSummonerSpellsHTML(player) {
+    const spellBaseUrl = window.CONFIG?.IMAGES?.SPELL_BASE_URL || 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/spell';
+    // Placeholder: a 1x1 gray pixel data URL
+    const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="32" height="32"%3E%3Crect width="32" height="32" fill="%23333333"/%3E%3C/svg%3E';
+    
+    let spellsHTML = '';
+    const spell1Id = player.summoner1Id || player.Summoner1Id;
+    const spell2Id = player.summoner2Id || player.Summoner2Id;
+
+    if (spell1Id) {
+      spellsHTML += `<div class="spell-slot">
+        <img src="${spellBaseUrl}/${spell1Id}.png" alt="" class="spell-icon"
+             onerror="this.src='${placeholder}';">
+      </div>`;
+    } else {
+      spellsHTML += `<div class="spell-slot"></div>`;
+    }
+    if (spell2Id) {
+      spellsHTML += `<div class="spell-slot">
+        <img src="${spellBaseUrl}/${spell2Id}.png" alt="" class="spell-icon"
+             onerror="this.src='${placeholder}';">
+      </div>`;
+    } else {
+      spellsHTML += `<div class="spell-slot"></div>`;
+    }
+    return spellsHTML;
+  }
   static generateItemSlotsHTML(player) {
     // Original: show items in their original slots (item0-item5), gaps preserved, Data Dragon only
     const itemBaseUrl = window.CONFIG?.IMAGES?.ITEM_BASE_URL || 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/item';
+    // Placeholder: a 1x1 gray pixel data URL
+    const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="32" height="32"%3E%3Crect width="32" height="32" fill="%23333333"/%3E%3C/svg%3E';
+    
     let itemsHTML = '';
     for (let i = 0; i <= 5; i++) {
       const itemId = player[`item${i}`] || player[`Item${i}`];
       if (itemId && itemId !== 0) {
         itemsHTML += `<div class="item-slot">
           <img src="${itemBaseUrl}/${itemId}.png" alt="Item ${itemId}" class="item-icon"
-               onerror="this.src='${itemBaseUrl}/0.png'">
+               onerror="this.src='${placeholder}';">
         </div>`;
       } else {
         itemsHTML += `<div class="item-slot"></div>`;
@@ -309,7 +338,7 @@ export class MatchDisplayManager {
     if (trinketId && trinketId !== 0) {
       itemsHTML += `<div class="trinket-slot">
         <img src="${itemBaseUrl}/${trinketId}.png" alt="Trinket ${trinketId}" class="item-icon"
-             onerror="this.src='${itemBaseUrl}/0.png'">
+             onerror="this.src='${placeholder}';">
       </div>`;
     } else {
       itemsHTML += `<div class="trinket-slot"></div>`;

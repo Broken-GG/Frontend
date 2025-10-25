@@ -245,6 +245,26 @@ class ProfileDisplayManager {
       profileIcon.src = CONFIG.IMAGES.FALLBACK_ICONS[2];
     }
   }
+    static updateProfileIcon(data) {
+      const profileIcon = document.getElementById('profile-icon');
+      if (!profileIcon) return;
+
+      // Riot API usually provides profileIconId, not a URL. Build the URL if needed.
+      let iconUrl = data.profileIconUrl || data.ProfileIconUrl || data.profileiconurl;
+      if (!iconUrl && (data.profileIconId || data.profileiconId)) {
+        const iconId = data.profileIconId || data.profileiconId;
+        iconUrl = `https://ddragon.leagueoflegends.com/cdn/14.20.1/img/profileicon/${iconId}.png`;
+      }
+
+      if (iconUrl && iconUrl !== '') {
+        console.log('Setting profile icon to:', iconUrl);
+        DOMUtils.setupImageWithFallbacks(profileIcon, iconUrl);
+        profileIcon.onload = () => console.log('✅ Profile icon loaded successfully');
+      } else {
+        console.warn('⚠️ No profile icon URL found, using default');
+        profileIcon.src = CONFIG.IMAGES.FALLBACK_ICONS[2];
+      }
+    }
 }
 
 async function displaySummonerData(data, userService = null) {
