@@ -97,8 +97,8 @@ export class UserPageService {
     });
   }
 
-  async getMatchHistoryBySummoner(summonerName, tagLine) {
-    return this.makeRequest(`/MatchInfo/summoner/${encodeURIComponent(summonerName)}/${encodeURIComponent(tagLine)}`, { 
+  async getMatchHistoryBySummoner(summonerName, tagLine, start = 0, count = 10) {
+    return this.makeRequest(`/MatchInfo/summoner/${encodeURIComponent(summonerName)}/${encodeURIComponent(tagLine)}?start=${start}&count=${count}`, { 
       method: 'GET' 
     });
   }
