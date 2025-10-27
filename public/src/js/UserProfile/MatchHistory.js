@@ -245,8 +245,13 @@ export class MatchDisplayManager {
   static createPlayerDisplay(player) {
     const championName = player.ChampionName || player.championName || 'Unknown';
     const summonerName = player.SummonerName || player.summonerName || 'Player';
+    const tagLine = player.tagline || player.Tagline || player.tagLine || '';
     const championImageUrl = player.ChampionImageUrl || player.championImageUrl || this.getChampionImageUrl(championName);
     const isMainPlayer = player.IsMainPlayer === true || player.isMainPlayer === true;
+    
+    // Escape quotes and special characters for onclick attribute
+    const escapedSummonerName = summonerName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const escapedTagLine = tagLine.replace(/'/g, "\\'").replace(/"/g, '&quot;');
     
     // Get champion base URL from CONFIG if available, otherwise use default
     const championBaseUrl = window.CONFIG?.IMAGES?.CHAMPION_BASE_URL || 'https://ddragon.leagueoflegends.com/cdn/13.6.1/img/champion';
@@ -255,7 +260,7 @@ export class MatchDisplayManager {
       <div class="team-player ${isMainPlayer ? 'searched-player' : ''}">
         <img src="${championImageUrl}" alt="${championName}" class="team-champion-icon"
              onerror="this.src='${championBaseUrl}/Unknown.png'">
-        <button class="player-name" onclick="handleSearch('${summonerName}')">${summonerName}</button>
+        <button class="player-name" onclick="handleSearch('${escapedSummonerName}', '${escapedTagLine}')">${summonerName}</button>
       </div>
     `;
   }
@@ -366,6 +371,40 @@ export class MatchDisplayManager {
     }
   }
 }
+
+/**
+ * Navigates to a summoner's profile page
+ * @param {string} summonerName - The summoner's name
+ * @param {string} tagLine - The summoner's tag line (optional)
+ */
+window.handleSearch = function(summonerName, tagLine) {
+  console.log('🔍 handleSearch called with:', { summonerName, tagLine });
+  
+  // If tagLine is not provided or empty, try to parse from summonerName or use default
+  if (!tagLine || tagLine === '') {
+    if (summonerName.includes('#')) {
+      // Format: "Name#TAG"
+      const parts = summonerName.split('#');
+      summonerName = parts[0];
+      tagLine = parts[1];
+    } else if (summonerName.includes('/')) {
+      // Format: "Name/REGION" - some APIs return this format
+      const parts = summonerName.split('/');
+      summonerName = parts[0];
+      tagLine = parts[1];
+    } else {
+      // Use default tag line
+      tagLine = 'EUW';
+    }
+  }
+  
+  console.log('📝 Final values:', { summonerName, tagLine });
+  
+  // Construct the URL and navigate
+  const url = `user.html?summonerName=${encodeURIComponent(summonerName)}&tagLine=${encodeURIComponent(tagLine)}`;
+  console.log('🚀 Redirecting to:', url);
+  window.location.href = url;
+};
 
 console.log('✅ MatchHistory.js fully loaded and exported');
 console.log('✅ Exports:', { loadMatchHistoryBySummoner: typeof loadMatchHistoryBySummoner, MatchDisplayManager: typeof MatchDisplayManager });
