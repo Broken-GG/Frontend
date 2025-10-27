@@ -14,7 +14,7 @@ export async function loadMatchHistoryBySummoner(summonerName, tagLine, userServ
     const matchData = await userService.getMatchHistoryBySummoner(summonerName, tagLine);
     
     console.log('Match history received:', matchData?.length || 0, 'matches');
-    MatchDisplayManager.displayMatchHistory(matchData);
+    MatchDisplayManager.displayMatchHistory(matchData, summonerName, tagLine, userService);
     
   } catch (error) {
     console.error('Failed to load match history:', error);
@@ -27,14 +27,24 @@ export async function loadMatchHistoryBySummoner(summonerName, tagLine, userServ
  */
 export class MatchDisplayManager {
   static isRendering = false;
+  static allMatches = []; // Store all loaded matches
+  static matchesPerLoad = 10; // How many matches to fetch per API call
+  static currentStartIndex = 0; // Track where we are in the API pagination
+  static summonerName = '';
+  static tagLine = '';
+  static userService = null;
+  static isLoading = false;
   
   /**
    * Displays match history data
    * @param {Array} matchData - Array of match objects
+   * @param {string} summonerName - The summoner's name
+   * @param {string} tagLine - The summoner's tag line
+   * @param {Object} userService - Instance of UserPageService for API calls
    */
-  static displayMatchHistory(matchData) {
+  static displayMatchHistory(matchData, summonerName = '', tagLine = '', userService = null) {
     if (this.isRendering) {
-      console.warn('⚠️ Already rendering match history, skipping...');
+      console.warn('Already rendering match history, skipping...');
       return;
     }
     
@@ -46,36 +56,33 @@ export class MatchDisplayManager {
     }
     
     this.isRendering = true;
-    this.displayMatchList(matchData);
+    
+    // Store for loading more
+    this.summonerName = summonerName;
+    this.tagLine = tagLine;
+    this.userService = userService;
+    this.currentStartIndex = matchData.length; // Start next fetch after these matches
+    
+    // Store matches
+    this.allMatches = matchData;
+    
+    // Clear and display
+    const container = document.querySelector('.matches');
+    if (container) {
+      container.innerHTML = '';
+      this.addMatchHistoryHeader(container, matchData.length);
+      this.displayMatches(matchData, container);
+      this.addLoadMoreButton(container);
+    }
+    
     this.isRendering = false;
   }
 
   /**
-   * Displays a list of matches
-   * @param {Array} matches - Array of match objects
+   * Display match cards
    */
-  static displayMatchList(matches) {
-    const container = document.querySelector('.matches');
-    if (!container) {
-      console.error('Matches container not found');
-      return;
-    }
-    
-    container.innerHTML = '';
-    
-    const last10Matches = matches.slice(0, 10);
-    
-    // Count wins by checking the match.victory property
-    const wins = last10Matches.filter(match => match.victory === true || match.Victory === true).length;
-    const losses = last10Matches.length - wins;
-    
-    console.log('📊 Match stats - Total:', last10Matches.length, 'Wins:', wins, 'Losses:', losses);
-    
-    // Add header
-    this.addMatchHistoryHeader(container, last10Matches.length, wins, losses);
-    
-    // Add match cards
-    last10Matches.forEach(match => {
+  static displayMatches(matches, container) {
+    matches.forEach(match => {
       try {
         const matchElement = this.createMatchCard(match);
         container.appendChild(matchElement);
@@ -86,17 +93,115 @@ export class MatchDisplayManager {
   }
 
   /**
-   * Adds the match history header to the container
-   * @param {HTMLElement} container - The container element
-   * @param {number} total - Total number of matches
-   * @param {number} wins - Number of wins
-   * @param {number} losses - Number of losses
+   * Add the "Show more" button
    */
-  static addMatchHistoryHeader(container, total, wins, losses) {
+  static addLoadMoreButton(container) {
+    // Remove existing button
+    const existingButton = container.querySelector('.load-more-button');
+    if (existingButton) {
+      existingButton.remove();
+    }
+    
+    // Create button
+    const button = document.createElement('button');
+    button.className = 'load-more-button';
+    button.textContent = this.isLoading ? 'Loading...' : 'Show more';
+    button.disabled = this.isLoading;
+    
+    button.addEventListener('click', async () => {
+      await this.loadMore();
+    });
+    
+    container.appendChild(button);
+  }
+
+  /**
+   * Load more matches from API
+   */
+  static async loadMore() {
+    if (this.isLoading) {
+      console.log('Already loading...');
+      return;
+    }
+    
+    if (!this.userService || !this.summonerName || !this.tagLine) {
+      console.error('Missing data to load more matches');
+      return;
+    }
+    
+    console.log('Loading more matches... start=' + this.currentStartIndex);
+    
+    this.isLoading = true;
+    const container = document.querySelector('.matches');
+    this.addLoadMoreButton(container); // Update button to show "Loading..."
+    
+    try {
+      // Fetch next batch
+      const newMatches = await this.userService.getMatchHistoryBySummoner(
+        this.summonerName,
+        this.tagLine,
+        this.currentStartIndex,
+        this.matchesPerLoad
+      );
+      
+      console.log('Received ' + (newMatches?.length || 0) + ' new matches');
+      
+      if (newMatches && newMatches.length > 0) {
+        // Add to our array
+        this.allMatches.push(...newMatches);
+        this.currentStartIndex += newMatches.length;
+        
+        // Remove button temporarily
+        const button = container.querySelector('.load-more-button');
+        if (button) button.remove();
+        
+        // Add new matches to display
+        this.displayMatches(newMatches, container);
+        
+        // Update header with new stats
+        this.updateMatchHistoryHeader(container);
+        
+        // Re-add button
+        this.addLoadMoreButton(container);
+        
+        console.log('Total matches now: ' + this.allMatches.length);
+      } else {
+        console.log('No more matches available');
+      }
+    } catch (error) {
+      console.error('Failed to load more matches:', error);
+    } finally {
+      this.isLoading = false;
+      this.addLoadMoreButton(container); // Update button back to "Show more"
+    }
+  }
+
+  /**
+   * Updates the match history header with current stats
+   */
+  static updateMatchHistoryHeader(container) {
+    const header = container.querySelector('.match-history-header');
+    if (!header) return;
+    
+    const totalMatches = this.allMatches.length;
+    const wins = this.allMatches.filter(m => m.victory === true || m.Victory === true).length;
+    const losses = totalMatches - wins;
+    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(2) : 0;
+    
+    header.innerHTML = `<h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>`;
+  }
+
+  /**
+   * Adds the match history header to the container
+   */
+  static addMatchHistoryHeader(container, totalMatches) {
+    const wins = this.allMatches.filter(m => m.victory === true || m.Victory === true).length;
+    const losses = totalMatches - wins;
+    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(2) : 0;
+    
     const header = document.createElement('div');
     header.className = 'match-history-header';
-    const winRate = total > 0 ? ((wins / total) * 100).toFixed(2) : 0;
-    header.innerHTML = `<h3>Recent Games (${total}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>`;
+    header.innerHTML = `<h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>`;
     container.appendChild(header);
   }
 
@@ -354,6 +459,10 @@ export class MatchDisplayManager {
       itemsHTML += `<div class="trinket-slot"></div>`;
     }
     return itemsHTML;
+  }
+
+  static loadMoreMatches() {
+    
   }
 
   /**
