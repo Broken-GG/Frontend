@@ -255,7 +255,7 @@ export class MatchDisplayManager {
       <div class="team-player ${isMainPlayer ? 'searched-player' : ''}">
         <img src="${championImageUrl}" alt="${championName}" class="team-champion-icon"
              onerror="this.src='${championBaseUrl}/Unknown.png'">
-        <span class="player-name">${summonerName}</span>
+        <button class="player-name" onclick="handleSearch('${summonerName}')">${summonerName}</button>
       </div>
     `;
   }
