@@ -5,44 +5,77 @@
   margin: 0;
   height: 100%;
   display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* Stats Header */
+.stats-header {
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Stats Content */
+.stats-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.2rem 1.5rem;
+}
+
+/* Winrate Section */
+.winrate-section {
+  display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.match-history-header h3 {
+.games-label {
+  color: #9a9a9a;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* KDA Section */
+.kda-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+}
+
+.kda-numbers {
+  color: #9a9a9a;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.kda-label {
   color: white;
-  font-size: 1.2rem;  /* 1rem * 1.2 */
-  font-weight: 600;
-  margin: 0;
-  text-align: left;
-  padding: 0 1rem 0 0;
-  flex: 1;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 /* Circular Progress */
 .circular-progress {
   position: relative;
-  width: 50px;
-  height: 50px;
-  margin-left: 1rem;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .circular-progress svg {
-  transform: rotate(-90deg); /* Start from top */
-}
-
-.progress-ring-bg {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.1);
-  stroke-width: 4;
-}
-
-.progress-ring-fill {
-  fill: none;
-  stroke: #1e90ff;
-  stroke-width: 4;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.5s ease;
+  width: 70px;
+  height: 70px;
+  transform: rotate(90deg); /* Start from top */
 }
 
 .progress-text {
@@ -51,9 +84,23 @@
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   pointer-events: none;
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: rgb(224, 18, 18);
+  stroke-width: 4;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: #17db1e;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
 }
 
 /* Matches Container */

@@ -34,7 +34,7 @@ export async function loadMatchHistoryBySummoner(summonerName, tagLine, userServ
   console.log('Loading match history for:', summonerName, tagLine);
   
   try {
-    const matchData = await userService.getMatchHistoryBySummoner(summonerName, tagLine);
+    const matchData = await userService.getMatchHistoryBySummoner(summonerName, tagLine, 0, 20);
     
     console.log('Match history received:', matchData?.length || 0, 'matches');
     await MatchDisplayManager.displayMatchHistory(matchData, summonerName, tagLine, userService);
@@ -51,7 +51,7 @@ export async function loadMatchHistoryBySummoner(summonerName, tagLine, userServ
 export class MatchDisplayManager {
   static isRendering = false;
   static allMatches = []; // Store all loaded matches
-  static matchesPerLoad = 10; // How many matches to fetch per API call
+  static matchesPerLoad = 20; // How many matches to fetch per API call
   static currentStartIndex = 0; // Track where we are in the API pagination
   static summonerName = '';
   static tagLine = '';
@@ -219,7 +219,26 @@ export class MatchDisplayManager {
     const totalMatches = this.allMatches.length;
     const wins = this.allMatches.filter(m => m.victory === true || m.Victory === true).length;
     const losses = totalMatches - wins;
-    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(2) : 0;
+    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(0) : 0;
+    
+    // Calculate KDA stats
+    let totalKills = 0;
+    let totalDeaths = 0;
+    let totalAssists = 0;
+    
+    this.allMatches.forEach(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      if (player) {
+        totalKills += player.kills || player.Kills || 0;
+        totalDeaths += player.deaths || player.Deaths || 0;
+        totalAssists += player.assists || player.Assists || 0;
+      }
+    });
+    
+    const avgKills = (totalKills / totalMatches).toFixed(1);
+    const avgDeaths = (totalDeaths / totalMatches).toFixed(1);
+    const avgAssists = (totalAssists / totalMatches).toFixed(1);
+    const kdaRatio = totalDeaths > 0 ? ((totalKills + totalAssists) / totalDeaths).toFixed(2) : 'Perfect';
     
     // Calculate circle progress
     const radius = 20;
@@ -227,16 +246,25 @@ export class MatchDisplayManager {
     const offset = circumference - (winRate / 100) * circumference;
     
     header.innerHTML = `
-      <div class="circular-progress">
-        <svg width="50" height="50" viewBox="0 0 50 50">
-          <circle class="progress-ring-bg" cx="25" cy="25" r="${radius}" />
-          <circle class="progress-ring-fill" cx="25" cy="25" r="${radius}"
-                  stroke-dasharray="${circumference}"
-                  stroke-dashoffset="${offset}" />
-        </svg>
-        <div class="progress-text">${winRate}%</div>
+      <div class="stats-header">Recent Games</div>
+      <div class="stats-content">
+        <div class="winrate-section">
+          <div class="games-label">${totalMatches}G ${wins}W ${losses}L</div>
+          <div class="circular-progress">
+            <svg width="50" height="50" viewBox="0 0 50 50">
+              <circle class="progress-ring-bg" cx="25" cy="25" r="${radius}" />
+              <circle class="progress-ring-fill" cx="25" cy="25" r="${radius}"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${offset}" />
+            </svg>
+            <div class="progress-text">${winRate}%</div>
+          </div>
+        </div>
+        <div class="kda-section">
+          <div class="kda-numbers">${avgKills} / ${avgDeaths} / ${avgAssists}</div>
+          <div class="kda-label">${kdaRatio}:1 KDA</div>
+        </div>
       </div>
-      <h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>
     `;
   }
 
@@ -246,7 +274,26 @@ export class MatchDisplayManager {
   static addMatchHistoryHeader(container, totalMatches) {
     const wins = this.allMatches.filter(m => m.victory === true || m.Victory === true).length;
     const losses = totalMatches - wins;
-    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(2) : 0;
+    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(0) : 0;
+    
+    // Calculate KDA stats
+    let totalKills = 0;
+    let totalDeaths = 0;
+    let totalAssists = 0;
+    
+    this.allMatches.forEach(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      if (player) {
+        totalKills += player.kills || player.Kills || 0;
+        totalDeaths += player.deaths || player.Deaths || 0;
+        totalAssists += player.assists || player.Assists || 0;
+      }
+    });
+    
+    const avgKills = (totalKills / totalMatches).toFixed(1);
+    const avgDeaths = (totalDeaths / totalMatches).toFixed(1);
+    const avgAssists = (totalAssists / totalMatches).toFixed(1);
+    const kdaRatio = totalDeaths > 0 ? ((totalKills + totalAssists) / totalDeaths).toFixed(2) : 'Perfect';
     
     // Calculate circle progress
     const radius = 20;
@@ -256,16 +303,25 @@ export class MatchDisplayManager {
     const header = document.createElement('div');
     header.className = 'match-history-header';
     header.innerHTML = `
-      <div class="circular-progress">
-        <svg width="50" height="50" viewBox="0 0 50 50">
-          <circle class="progress-ring-bg" cx="25" cy="25" r="${radius}" />
-          <circle class="progress-ring-fill" cx="25" cy="25" r="${radius}"
-                  stroke-dasharray="${circumference}"
-                  stroke-dashoffset="${offset}" />
-        </svg>
-        <div class="progress-text">${winRate}%</div>
+      <div class="stats-header">Recent Games</div>
+      <div class="stats-content">
+        <div class="winrate-section">
+          <div class="games-label">${totalMatches}G ${wins}W ${losses}L</div>
+          <div class="circular-progress">
+            <svg width="50" height="50" viewBox="0 0 50 50">
+              <circle class="progress-ring-bg" cx="25" cy="25" r="${radius}" />
+              <circle class="progress-ring-fill" cx="25" cy="25" r="${radius}"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${offset}" />
+            </svg>
+            <div class="progress-text">${winRate}%</div>
+          </div>
+        </div>
+        <div class="kda-section">
+          <div class="kda-numbers">${avgKills} / ${avgDeaths} / ${avgAssists}</div>
+          <div class="kda-label">${kdaRatio}:1 KDA</div>
+        </div>
       </div>
-      <h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>
     `;
     container.appendChild(header);
   }
