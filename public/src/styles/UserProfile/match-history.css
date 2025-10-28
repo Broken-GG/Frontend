@@ -2,7 +2,10 @@
 
 /* Match History Header */
 .match-history-header {
-  margin-bottom: 0.6rem;  /* 0.5rem * 1.2 */
+  margin: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .match-history-header h3 {
@@ -11,9 +14,8 @@
   font-weight: 600;
   margin: 0;
   text-align: left;
-  padding: 0.9rem;  /* 0.75rem * 1.2 */
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 0 1rem;
+  width: 100%;
 }
 
 /* Matches Container */

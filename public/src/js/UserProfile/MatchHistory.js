@@ -91,9 +91,16 @@ export class MatchDisplayManager {
     
     // Clear and display
     const container = document.querySelector('.matches');
+    const topContainer = document.querySelector('.profile-main-top');
+    
     if (container) {
       container.innerHTML = '';
-      this.addMatchHistoryHeader(container, matchData.length);
+      
+      // Add header to the top section instead of matches container
+      if (topContainer) {
+        this.addMatchHistoryHeader(topContainer, matchData.length);
+      }
+      
       await this.displayMatches(matchData, container);
       this.addLoadMoreButton(container);
     }
@@ -182,7 +189,7 @@ export class MatchDisplayManager {
         await this.displayMatches(newMatches, container);
         
         // Update header with new stats
-        this.updateMatchHistoryHeader(container);
+        this.updateMatchHistoryHeader();
         
         // Re-add button
         this.addLoadMoreButton(container);
@@ -202,8 +209,11 @@ export class MatchDisplayManager {
   /**
    * Updates the match history header with current stats
    */
-  static updateMatchHistoryHeader(container) {
-    const header = container.querySelector('.match-history-header');
+  static updateMatchHistoryHeader() {
+    const topContainer = document.querySelector('.profile-main-top');
+    if (!topContainer) return;
+    
+    const header = topContainer.querySelector('.match-history-header');
     if (!header) return;
     
     const totalMatches = this.allMatches.length;
