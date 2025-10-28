@@ -221,7 +221,23 @@ export class MatchDisplayManager {
     const losses = totalMatches - wins;
     const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(2) : 0;
     
-    header.innerHTML = `<h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>`;
+    // Calculate circle progress
+    const radius = 20;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (winRate / 100) * circumference;
+    
+    header.innerHTML = `
+      <div class="circular-progress">
+        <svg width="50" height="50" viewBox="0 0 50 50">
+          <circle class="progress-ring-bg" cx="25" cy="25" r="${radius}" />
+          <circle class="progress-ring-fill" cx="25" cy="25" r="${radius}"
+                  stroke-dasharray="${circumference}"
+                  stroke-dashoffset="${offset}" />
+        </svg>
+        <div class="progress-text">${winRate}%</div>
+      </div>
+      <h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>
+    `;
   }
 
   /**
@@ -232,9 +248,25 @@ export class MatchDisplayManager {
     const losses = totalMatches - wins;
     const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(2) : 0;
     
+    // Calculate circle progress
+    const radius = 20;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (winRate / 100) * circumference;
+    
     const header = document.createElement('div');
     header.className = 'match-history-header';
-    header.innerHTML = `<h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>`;
+    header.innerHTML = `
+      <div class="circular-progress">
+        <svg width="50" height="50" viewBox="0 0 50 50">
+          <circle class="progress-ring-bg" cx="25" cy="25" r="${radius}" />
+          <circle class="progress-ring-fill" cx="25" cy="25" r="${radius}"
+                  stroke-dasharray="${circumference}"
+                  stroke-dashoffset="${offset}" />
+        </svg>
+        <div class="progress-text">${winRate}%</div>
+      </div>
+      <h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>
+    `;
     container.appendChild(header);
   }
 
