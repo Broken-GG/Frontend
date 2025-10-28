@@ -293,8 +293,9 @@ export class MatchDisplayManager {
     const championBaseUrl = window.CONFIG?.IMAGES?.CHAMPION_BASE_URL || `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion`;
     
     // Generate items and summoner spells HTML before the template literal
-    const itemsHTML = this.generateItemSlotsHTML(mainPlayer);
-    const spellsHTML = this.generateSummonerSpellsHTML(mainPlayer);
+    const itemsHTML = await this.generateItemSlotsHTML(mainPlayer);
+    const spellsHTML = await this.generateSummonerSpellsHTML(mainPlayer);
+    const teamsHTML = await this.createTeamsDisplay(match);
 
     return `
       <div class="match-info">
@@ -333,7 +334,7 @@ export class MatchDisplayManager {
       </div>
 
       <div class="teams-section">
-        ${this.createTeamsDisplay(match)}
+        ${teamsHTML}
       </div>
     `;
   }
