@@ -239,7 +239,33 @@ export class MatchDisplayManager {
     const avgDeaths = (totalDeaths / totalMatches).toFixed(1);
     const avgAssists = (totalAssists / totalMatches).toFixed(1);
     const kdaRatio = totalDeaths > 0 ? ((totalKills + totalAssists) / totalDeaths).toFixed(2) : 'Perfect';
-    
+
+    // Count games per position by checking MainPlayer's TeamPosition
+    const numberOfGamesPlayedTop = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'TOP' || player.TeamPosition === 'Top');
+    }).length;
+
+    const numberOfGamesPlayedJungle = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'JUNGLE' || player.TeamPosition === 'Jungle');
+    }).length;
+
+    const numberOfGamesPlayedMid = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'MIDDLE' || player.TeamPosition === 'Mid' || player.TeamPosition === 'MID');
+    }).length;
+
+    const numberOfGamesPlayedADC = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'BOTTOM' || player.TeamPosition === 'ADC' || player.TeamPosition === 'BOT');
+    }).length;
+
+    const numberOfGamesPlayedSupport = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'UTILITY' || player.TeamPosition === 'Support' || player.TeamPosition === 'SUP');
+    }).length;
+
     // Calculate circle progress
     const radius = 20;
     const circumference = 2 * Math.PI * radius;
@@ -265,7 +291,39 @@ export class MatchDisplayManager {
           <div class="kda-label">${kdaRatio}:1 KDA</div>
         </div>
       </div>
+      <div class="role-stats">
+        ${this.generateRoleStatsHTML(numberOfGamesPlayedTop, numberOfGamesPlayedJungle, numberOfGamesPlayedMid, numberOfGamesPlayedADC, numberOfGamesPlayedSupport, totalMatches)}
+      </div>
     `;
+  }
+
+  /**
+   * Generates role stats HTML with vertical bars and icons
+   */
+  static generateRoleStatsHTML(top, jungle, mid, adc, support, total) {
+    // Use total games as max height (20, 40, etc.)
+    const maxGames = total > 0 ? total : 1;
+    
+    const roles = [
+      { name: 'Top', count: top, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-top.png' },
+      { name: 'Jungle', count: jungle, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-jungle.png' },
+      { name: 'Mid', count: mid, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-middle.png' },
+      { name: 'ADC', count: adc, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-bottom.png' },
+      { name: 'Support', count: support, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-utility.png' }
+    ];
+    
+    return roles.map(role => {
+      const heightPercent = maxGames > 0 ? (role.count / maxGames) * 100 : 0;
+      return `
+        <div class="role-stat">
+          <div class="role-bar-container">
+            <div class="role-bar-fill" style="height: ${heightPercent}%"></div>
+          </div>
+          <img src="${role.icon}" alt="${role.name}" class="role-icon" />
+          <div class="role-count">${role.count}</div>
+        </div>
+      `;
+    }).join('');
   }
 
   /**
@@ -295,6 +353,32 @@ export class MatchDisplayManager {
     const avgAssists = (totalAssists / totalMatches).toFixed(1);
     const kdaRatio = totalDeaths > 0 ? ((totalKills + totalAssists) / totalDeaths).toFixed(2) : 'Perfect';
     
+    // Count games per position
+    const numberOfGamesPlayedTop = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'TOP' || player.teamPosition === 'Top');
+    }).length;
+
+    const numberOfGamesPlayedJungle = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'JUNGLE' || player.teamPosition === 'Jungle');
+    }).length;
+
+    const numberOfGamesPlayedMid = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'MIDDLE' || player.teamPosition === 'Mid' || player.teamPosition === 'MID');
+    }).length;
+
+    const numberOfGamesPlayedADC = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'BOTTOM' || player.teamPosition === 'ADC' || player.teamPosition === 'BOT');
+    }).length;
+
+    const numberOfGamesPlayedSupport = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'UTILITY' || player.teamPosition === 'Support' || player.teamPosition === 'SUP');
+    }).length;
+    
     // Calculate circle progress
     const radius = 20;
     const circumference = 2 * Math.PI * radius;
@@ -321,6 +405,9 @@ export class MatchDisplayManager {
           <div class="kda-numbers">${avgKills} / ${avgDeaths} / ${avgAssists}</div>
           <div class="kda-label">${kdaRatio}:1 KDA</div>
         </div>
+      </div>
+      <div class="role-stats">
+        ${this.generateRoleStatsHTML(numberOfGamesPlayedTop, numberOfGamesPlayedJungle, numberOfGamesPlayedMid, numberOfGamesPlayedADC, numberOfGamesPlayedSupport, totalMatches)}
       </div>
     `;
     container.appendChild(header);
