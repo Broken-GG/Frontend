@@ -2,18 +2,158 @@
 
 /* Match History Header */
 .match-history-header {
-  margin-bottom: 0.6rem;  /* 0.5rem * 1.2 */
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: relative;
 }
 
-.match-history-header h3 {
+/* Stats Header */
+.stats-header {
   color: white;
-  font-size: 1.2rem;  /* 1rem * 1.2 */
+  font-size: 1rem;
   font-weight: 600;
-  margin: 0;
-  text-align: left;
-  padding: 0.9rem;  /* 0.75rem * 1.2 */
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Stats Content */
+.stats-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.2rem 1.5rem;
+}
+
+/* Role Stats - Vertical Bars */
+.role-stats {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 60px;
+  position: absolute;
+  right: 1.5rem;
+  top: 80%;
+  transform: translateY(-50%);
+}
+
+.role-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.role-bar-container {
+  width: 15px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.role-bar-fill {
+  width: 100%;
+  background: linear-gradient(to top, #3b82f6, #60a5fa);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+  position: relative;
+}
+
+.role-icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0.8);
+  margin-bottom: 0.2rem;
+}
+
+.role-count {
+  font-size: 0.7rem;
+  color: #9a9a9a;
+  font-weight: 600;
+}
+
+/* Winrate Section */
+.winrate-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.games-label {
+  color: #9a9a9a;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* KDA Section */
+.kda-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+}
+
+.kda-numbers {
+  color: #9a9a9a;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.kda-label {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Circular Progress */
+.circular-progress {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.circular-progress svg {
+  width: 70px;
+  height: 70px;
+  transform: rotate(90deg); /* Start from top */
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: rgb(224, 18, 18);
+  stroke-width: 4;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: #17db1e;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
 }
 
 /* Matches Container */
@@ -383,4 +523,37 @@
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.match-history-progress {
+  --progress-color: #007bff; 
+  --bg-color: #e9ecef;
+  --inner-color: #fff; 
+  
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: conic-gradient(
+    var(--progress-color) calc(var(--progress) * 1%), 
+    var(--bg-color) 0
+  );
+}
+
+.inner-circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background-color: var(--inner-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.percentage {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
 }

@@ -34,7 +34,7 @@ export async function loadMatchHistoryBySummoner(summonerName, tagLine, userServ
   console.log('Loading match history for:', summonerName, tagLine);
   
   try {
-    const matchData = await userService.getMatchHistoryBySummoner(summonerName, tagLine);
+    const matchData = await userService.getMatchHistoryBySummoner(summonerName, tagLine, 0, 20);
     
     console.log('Match history received:', matchData?.length || 0, 'matches');
     await MatchDisplayManager.displayMatchHistory(matchData, summonerName, tagLine, userService);
@@ -51,7 +51,7 @@ export async function loadMatchHistoryBySummoner(summonerName, tagLine, userServ
 export class MatchDisplayManager {
   static isRendering = false;
   static allMatches = []; // Store all loaded matches
-  static matchesPerLoad = 10; // How many matches to fetch per API call
+  static matchesPerLoad = 20; // How many matches to fetch per API call
   static currentStartIndex = 0; // Track where we are in the API pagination
   static summonerName = '';
   static tagLine = '';
@@ -91,9 +91,16 @@ export class MatchDisplayManager {
     
     // Clear and display
     const container = document.querySelector('.matches');
+    const topContainer = document.querySelector('.profile-main-top');
+    
     if (container) {
       container.innerHTML = '';
-      this.addMatchHistoryHeader(container, matchData.length);
+      
+      // Add header to the top section instead of matches container
+      if (topContainer) {
+        this.addMatchHistoryHeader(topContainer, matchData.length);
+      }
+      
       await this.displayMatches(matchData, container);
       this.addLoadMoreButton(container);
     }
@@ -182,7 +189,7 @@ export class MatchDisplayManager {
         await this.displayMatches(newMatches, container);
         
         // Update header with new stats
-        this.updateMatchHistoryHeader(container);
+        this.updateMatchHistoryHeader();
         
         // Re-add button
         this.addLoadMoreButton(container);
@@ -202,16 +209,121 @@ export class MatchDisplayManager {
   /**
    * Updates the match history header with current stats
    */
-  static updateMatchHistoryHeader(container) {
-    const header = container.querySelector('.match-history-header');
+  static updateMatchHistoryHeader() {
+    const topContainer = document.querySelector('.profile-main-top');
+    if (!topContainer) return;
+    
+    const header = topContainer.querySelector('.match-history-header');
     if (!header) return;
     
     const totalMatches = this.allMatches.length;
     const wins = this.allMatches.filter(m => m.victory === true || m.Victory === true).length;
     const losses = totalMatches - wins;
-    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(2) : 0;
+    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(0) : 0;
     
-    header.innerHTML = `<h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>`;
+    // Calculate KDA stats
+    let totalKills = 0;
+    let totalDeaths = 0;
+    let totalAssists = 0;
+    
+    this.allMatches.forEach(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      if (player) {
+        totalKills += player.kills || player.Kills || 0;
+        totalDeaths += player.deaths || player.Deaths || 0;
+        totalAssists += player.assists || player.Assists || 0;
+      }
+    });
+    
+    const avgKills = (totalKills / totalMatches).toFixed(1);
+    const avgDeaths = (totalDeaths / totalMatches).toFixed(1);
+    const avgAssists = (totalAssists / totalMatches).toFixed(1);
+    const kdaRatio = totalDeaths > 0 ? ((totalKills + totalAssists) / totalDeaths).toFixed(2) : 'Perfect';
+
+    // Count games per position by checking MainPlayer's TeamPosition
+    const numberOfGamesPlayedTop = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'TOP' || player.TeamPosition === 'Top');
+    }).length;
+
+    const numberOfGamesPlayedJungle = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'JUNGLE' || player.TeamPosition === 'Jungle');
+    }).length;
+
+    const numberOfGamesPlayedMid = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'MIDDLE' || player.TeamPosition === 'Mid' || player.TeamPosition === 'MID');
+    }).length;
+
+    const numberOfGamesPlayedADC = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'BOTTOM' || player.TeamPosition === 'ADC' || player.TeamPosition === 'BOT');
+    }).length;
+
+    const numberOfGamesPlayedSupport = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.TeamPosition === 'UTILITY' || player.TeamPosition === 'Support' || player.TeamPosition === 'SUP');
+    }).length;
+
+    // Calculate circle progress
+    const radius = 20;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (winRate / 100) * circumference;
+    
+    header.innerHTML = `
+      <div class="stats-header">Recent Games</div>
+      <div class="stats-content">
+        <div class="winrate-section">
+          <div class="games-label">${totalMatches}G ${wins}W ${losses}L</div>
+          <div class="circular-progress">
+            <svg width="50" height="50" viewBox="0 0 50 50">
+              <circle class="progress-ring-bg" cx="25" cy="25" r="${radius}" />
+              <circle class="progress-ring-fill" cx="25" cy="25" r="${radius}"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${offset}" />
+            </svg>
+            <div class="progress-text">${winRate}%</div>
+          </div>
+        </div>
+        <div class="kda-section">
+          <div class="kda-numbers">${avgKills} / ${avgDeaths} / ${avgAssists}</div>
+          <div class="kda-label">${kdaRatio}:1 KDA</div>
+        </div>
+      </div>
+      <div class="role-stats">
+        ${this.generateRoleStatsHTML(numberOfGamesPlayedTop, numberOfGamesPlayedJungle, numberOfGamesPlayedMid, numberOfGamesPlayedADC, numberOfGamesPlayedSupport, totalMatches)}
+      </div>
+    `;
+  }
+
+  /**
+   * Generates role stats HTML with vertical bars and icons
+   */
+  static generateRoleStatsHTML(top, jungle, mid, adc, support, total) {
+    // Use total games as max height (20, 40, etc.)
+    const maxGames = total > 0 ? total : 1;
+    
+    const roles = [
+      { name: 'Top', count: top, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-top.png' },
+      { name: 'Jungle', count: jungle, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-jungle.png' },
+      { name: 'Mid', count: mid, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-middle.png' },
+      { name: 'ADC', count: adc, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-bottom.png' },
+      { name: 'Support', count: support, icon: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-utility.png' }
+    ];
+    
+    return roles.map(role => {
+      const heightPercent = maxGames > 0 ? (role.count / maxGames) * 100 : 0;
+      return `
+        <div class="role-stat">
+          <div class="role-bar-container">
+            <div class="role-bar-fill" style="height: ${heightPercent}%"></div>
+          </div>
+          <img src="${role.icon}" alt="${role.name}" class="role-icon" />
+          <div class="role-count">${role.count}</div>
+        </div>
+      `;
+    }).join('');
   }
 
   /**
@@ -220,11 +332,84 @@ export class MatchDisplayManager {
   static addMatchHistoryHeader(container, totalMatches) {
     const wins = this.allMatches.filter(m => m.victory === true || m.Victory === true).length;
     const losses = totalMatches - wins;
-    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(2) : 0;
+    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(0) : 0;
+    
+    // Calculate KDA stats
+    let totalKills = 0;
+    let totalDeaths = 0;
+    let totalAssists = 0;
+    
+    this.allMatches.forEach(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      if (player) {
+        totalKills += player.kills || player.Kills || 0;
+        totalDeaths += player.deaths || player.Deaths || 0;
+        totalAssists += player.assists || player.Assists || 0;
+      }
+    });
+    
+    const avgKills = (totalKills / totalMatches).toFixed(1);
+    const avgDeaths = (totalDeaths / totalMatches).toFixed(1);
+    const avgAssists = (totalAssists / totalMatches).toFixed(1);
+    const kdaRatio = totalDeaths > 0 ? ((totalKills + totalAssists) / totalDeaths).toFixed(2) : 'Perfect';
+    
+    // Count games per position
+    const numberOfGamesPlayedTop = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'TOP' || player.teamPosition === 'Top');
+    }).length;
+
+    const numberOfGamesPlayedJungle = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'JUNGLE' || player.teamPosition === 'Jungle');
+    }).length;
+
+    const numberOfGamesPlayedMid = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'MIDDLE' || player.teamPosition === 'Mid' || player.teamPosition === 'MID');
+    }).length;
+
+    const numberOfGamesPlayedADC = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'BOTTOM' || player.teamPosition === 'ADC' || player.teamPosition === 'BOT');
+    }).length;
+
+    const numberOfGamesPlayedSupport = this.allMatches.filter(match => {
+      const player = match.MainPlayer || match.mainPlayer;
+      return player && (player.teamPosition === 'UTILITY' || player.teamPosition === 'Support' || player.teamPosition === 'SUP');
+    }).length;
+    
+    // Calculate circle progress
+    const radius = 20;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (winRate / 100) * circumference;
     
     const header = document.createElement('div');
     header.className = 'match-history-header';
-    header.innerHTML = `<h3>Recent Games (${totalMatches}G ${wins}W ${losses}L) - Win Rate: ${winRate}%</h3>`;
+    header.innerHTML = `
+      <div class="stats-header">Recent Games</div>
+      <div class="stats-content">
+        <div class="winrate-section">
+          <div class="games-label">${totalMatches}G ${wins}W ${losses}L</div>
+          <div class="circular-progress">
+            <svg width="50" height="50" viewBox="0 0 50 50">
+              <circle class="progress-ring-bg" cx="25" cy="25" r="${radius}" />
+              <circle class="progress-ring-fill" cx="25" cy="25" r="${radius}"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${offset}" />
+            </svg>
+            <div class="progress-text">${winRate}%</div>
+          </div>
+        </div>
+        <div class="kda-section">
+          <div class="kda-numbers">${avgKills} / ${avgDeaths} / ${avgAssists}</div>
+          <div class="kda-label">${kdaRatio}:1 KDA</div>
+        </div>
+      </div>
+      <div class="role-stats">
+        ${this.generateRoleStatsHTML(numberOfGamesPlayedTop, numberOfGamesPlayedJungle, numberOfGamesPlayedMid, numberOfGamesPlayedADC, numberOfGamesPlayedSupport, totalMatches)}
+      </div>
+    `;
     container.appendChild(header);
   }
 
