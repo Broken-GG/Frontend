@@ -109,3 +109,10 @@ jobs:
       with:
         sarif_file: 'trivy-results.sarif'
       continue-on-error: true
+
+env:
+  RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
+  RIOT_API_URL: ${{ secrets.RIOT_API_URL }}
+  RIOT_SUMMONER_URL: ${{ secrets.RIOT_SUMMONER_URL }}
+  ASPNETCORE_ENVIRONMENT: ${{ secrets.ASPNETCORE_ENVIRONMENT }}
+  ASPNETCORE_URLS: ${{ secrets.ASPNETCORE_URLS }}

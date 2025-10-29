@@ -13,7 +13,11 @@ services:
     networks:
       - brokengg-network
     environment:
-      - BACKEND_URL=http://localhost:5000
+      - RIOT_API_KEY
+      - RIOT_API_URL
+      - RIOT_SUMMONER_URL
+      - ASPNETCORE_ENVIRONMENT
+      - ASPNETCORE_URLS
 
   # Backend API Service (optional - only if Backend is cloned alongside)
   # Uncomment this section if you have Backend repo cloned in ../Backend
