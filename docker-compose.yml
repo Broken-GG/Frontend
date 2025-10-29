@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Frontend Web Service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: brokengg-frontend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - brokengg-network
+    environment:
+      - BACKEND_URL=http://localhost:5000
+
+  # Backend API Service (optional - only if Backend is cloned alongside)
+  # Uncomment this section if you have Backend repo cloned in ../Backend
+  # backend:
+  #   build:
+  #     context: ../Backend
+  #     dockerfile: Dockerfile
+  #   container_name: brokengg-backend
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Production
+  #   restart: unless-stopped
+  #   networks:
+  #     - brokengg-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 40s
+
+networks:
+  brokengg-network:
+    driver: bridge
