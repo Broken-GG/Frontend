@@ -1,5 +1,5 @@
 # Frontend - Broken.GG Web Application
-[![CI/CD Integration](https://github.com/Broken-GG/Frontend/blob/main/.github/workflows/ci-cd.yml/badge.svg)](https://github.com/Broken-GG/Frontend/actions)
+[![CI/CD Integration](https://github.com/Broken-GG/Frontend/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Broken-GG/Frontend/actions)
 
 
 Static web application for League of Legends match history tracking.
