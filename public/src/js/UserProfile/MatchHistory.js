@@ -24,6 +24,170 @@ async function getLatestDDragonVersion() {
 // Initialize version on module load
 getLatestDDragonVersion();
 
+// ----------------------------------------------------------------------------
+// Data Dragon - Item and Spell name caching
+// ----------------------------------------------------------------------------
+let cachedItemData = null;
+let cachedSummonerSpellData = null;
+let cachedAugmentNameMap = null;
+
+async function getItemData() {
+  if (cachedItemData) return cachedItemData;
+  
+  try {
+    const version = await getLatestDDragonVersion();
+    const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`);
+    const data = await response.json();
+    cachedItemData = data.data;
+    console.log('✅ Loaded item data');
+    return cachedItemData;
+  } catch (error) {
+    console.error('Failed to fetch item data:', error);
+    return {};
+  }
+}
+
+async function getSummonerSpellData() {
+  if (cachedSummonerSpellData) return cachedSummonerSpellData;
+  
+  try {
+    const version = await getLatestDDragonVersion();
+    const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/summoner.json`);
+    const data = await response.json();
+    cachedSummonerSpellData = data.data;
+    console.log('✅ Loaded summoner spell data');
+    return cachedSummonerSpellData;
+  } catch (error) {
+    console.error('Failed to fetch summoner spell data:', error);
+    return {};
+  }
+}
+
+function getItemName(itemId) {
+  if (!itemId || itemId === 0) return null;
+  return cachedItemData?.[itemId]?.name || `Item ${itemId}`;
+}
+
+function getSummonerSpellName(spellImageUrl) {
+  if (!spellImageUrl || !cachedSummonerSpellData) return null;
+  
+  // Extract spell key from URL (e.g., "SummonerFlash.png" -> "SummonerFlash")
+  const match = spellImageUrl.match(/\/([^/]+)\.png$/);
+  if (!match) return null;
+  
+  const spellKey = match[1];
+  
+  // Find spell by matching image property
+  for (const [key, spell] of Object.entries(cachedSummonerSpellData)) {
+    if (spell.image?.full === `${spellKey}.png` || spell.id === spellKey) {
+      return spell.name;
+    }
+  }
+  
+  return spellKey.replace('Summoner', '');
+}
+
+// Initialize data on module load
+getItemData();
+getSummonerSpellData();
+
+// ----------------------------------------------------------------------------
+// Arena Augments resolver (CommunityDragon)
+// ----------------------------------------------------------------------------
+let cachedAugmentIconMap = null;
+
+function toCDragonUrl(iconPath, version = 'latest') {
+  if (!iconPath) return null;
+  if (/^https?:\/\//i.test(iconPath)) {
+    return iconPath.replace('/pbe/', '/latest/');
+  }
+  let p = iconPath.replace(/^\/+/, '');
+  const lower = p.toLowerCase();
+
+  // Normalize common CDragon path variants
+  if (lower.startsWith('lol-game-data/assets/')) {
+    const rest = p.substring('lol-game-data/assets/'.length);
+    return `https://raw.communitydragon.org/${version}/plugins/rcp-be-lol-game-data/global/default/${rest}`;
+  }
+  if (lower.startsWith('game/')) {
+    return `https://raw.communitydragon.org/${version}/${p}`;
+  }
+  if (lower.startsWith('assets/')) {
+    return `https://raw.communitydragon.org/${version}/game/${p}`;
+  }
+  if (lower.startsWith('plugins/')) {
+    return `https://raw.communitydragon.org/${version}/${p}`;
+  }
+  // Fallback to the known augments icons folder
+  return `https://raw.communitydragon.org/${version}/game/assets/ux/cherry/augments/icons/${p}`;
+}
+
+async function getArenaAugmentIconMap() {
+  if (cachedAugmentIconMap) return cachedAugmentIconMap;
+
+  const candidates = [
+    'https://raw.communitydragon.org/latest/cdragon/arena/en_us.json',
+    'https://raw.communitydragon.org/13.24/cdragon/arena/en_us.json',
+    'https://raw.communitydragon.org/13.16/cdragon/arena/en_us.json'
+  ];
+
+  let data = null;
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { cache: 'force-cache' });
+      if (res.ok) {
+        data = await res.json();
+        console.log('✅ Loaded arena augments from:', url);
+        break;
+      }
+    } catch (e) {
+      console.warn('Augments JSON fetch failed for', url, e);
+    }
+  }
+
+  const map = new Map();
+  const list = data?.augments || data?.Augments || [];
+  console.log('📦 Processing', list.length, 'augments');
+  
+  for (const aug of list) {
+    const id =
+      aug.id ??
+      aug.augmentId ??
+      aug.contentId ??
+      aug.perkId ??
+      null;
+
+    // Try several fields that appear across versions
+    const iconPath =
+      aug.iconSmall ||
+      aug.iconLarge ||
+      aug.icon ||
+      aug.image ||
+      aug.iconPath ||
+      aug.iconfile ||
+      null;
+
+    const name = aug.name || aug.displayName || aug.title || `Augment ${id}`;
+
+    if (id != null && iconPath) {
+      map.set(Number(id), {
+        iconUrl: toCDragonUrl(iconPath),
+        name: name
+      });
+    }
+  }
+
+  console.log('✅ Built augment icon map with', map.size, 'entries');
+  cachedAugmentIconMap = map;
+  return cachedAugmentIconMap;
+}
+
+function getAugmentInfo(augmentId) {
+  if (!cachedAugmentIconMap || !augmentId) return null;
+  return cachedAugmentIconMap.get(Number(augmentId)) || cachedAugmentIconMap.get(String(augmentId));
+}
+// ----------------------------------------------------------------------------
+
 /**
  * Loads match history for a summoner by name and tag
  * @param {string} summonerName - The summoner's name
@@ -482,7 +646,7 @@ export class MatchDisplayManager {
     // Generate items and summoner spells HTML before the template literal
     const itemsHTML = await this.generateItemSlotsHTML(mainPlayer);
     const spellsHTML = await this.generateSummonerSpellsHTML(mainPlayer);
-    const augmentsHTML = gameMode === 'Arena' ? this.generateAugmentsHTML(mainPlayer) : '';
+    const augmentsHTML = gameMode === 'Arena' ? await this.generateAugmentsHTML(mainPlayer) : '';
     
     // Check if this is Arena mode and generate appropriate teams display
     let teamsHTML;
@@ -504,7 +668,7 @@ export class MatchDisplayManager {
       <div class="champion-section">
         <div>
           <div class="champion-container">
-            <img src="${championImageUrl}" alt="${championName}" class="champion-icon"
+            <img src="${championImageUrl}" alt="${championName}" class="champion-icon" title="${championName}"
                  onerror="this.src='${championBaseUrl}/Unknown.png'">
           </div>
           <div class="summoner-spells">
@@ -584,10 +748,12 @@ export class MatchDisplayManager {
         `;
       })
     );
-    
+    // Only show the top 4 duo teams
+    const topDuoTeamsHTML = duoTeamsHTML.slice(0, 4);
+
     return `
       <div class="arena-teams">
-        ${duoTeamsHTML.join('')}
+        ${topDuoTeamsHTML.join('')}
       </div>
     `;
   }
@@ -708,17 +874,21 @@ export class MatchDisplayManager {
     const spell1Url = player.summoner1ImageUrl || player.Summoner1ImageUrl;
     const spell2Url = player.summoner2ImageUrl || player.Summoner2ImageUrl;
 
+    // Get spell names
+    const spell1Name = getSummonerSpellName(spell1Url) || 'Summoner Spell 1';
+    const spell2Name = getSummonerSpellName(spell2Url) || 'Summoner Spell 2';
+
     if (spell1Url) {
-      spellsHTML += `<div class="spell-slot">
-        <img src="${spell1Url}" alt="Spell 1" class="spell-icon"
+      spellsHTML += `<div class="spell-slot" title="${spell1Name}">
+        <img src="${spell1Url}" alt="${spell1Name}" class="spell-icon"
              onerror="this.src='${placeholder}';">
       </div>`;
     } else {
       spellsHTML += `<div class="spell-slot"></div>`;
     }
     if (spell2Url) {
-      spellsHTML += `<div class="spell-slot">
-        <img src="${spell2Url}" alt="Spell 2" class="spell-icon"
+      spellsHTML += `<div class="spell-slot" title="${spell2Name}">
+        <img src="${spell2Url}" alt="${spell2Name}" class="spell-icon"
              onerror="this.src='${placeholder}';">
       </div>`;
     } else {
@@ -737,8 +907,9 @@ export class MatchDisplayManager {
       const itemId = player[`item${i}`] || player[`Item${i}`];
       
       if (itemUrl && itemId && itemId !== 0) {
-        itemsHTML += `<div class="item-slot">
-          <img src="${itemUrl}" alt="Item ${itemId}" class="item-icon"
+        const itemName = getItemName(itemId) || `Item ${itemId}`;
+        itemsHTML += `<div class="item-slot" title="${itemName}">
+          <img src="${itemUrl}" alt="${itemName}" class="item-icon"
                onerror="this.src='${placeholder}';">
         </div>`;
       } else {
@@ -750,8 +921,9 @@ export class MatchDisplayManager {
     const trinketId = player.item6 || player.Item6;
     
     if (trinketUrl && trinketId && trinketId !== 0) {
-      itemsHTML += `<div class="trinket-slot">
-        <img src="${trinketUrl}" alt="Trinket ${trinketId}" class="item-icon"
+      const trinketName = getItemName(trinketId) || `Trinket ${trinketId}`;
+      itemsHTML += `<div class="trinket-slot" title="${trinketName}">
+        <img src="${trinketUrl}" alt="${trinketName}" class="item-icon"
              onerror="this.src='${placeholder}';">
       </div>`;
     } else {
@@ -765,7 +937,7 @@ export class MatchDisplayManager {
    * @param {Object} player - Player data object
    * @returns {string} HTML string for augments
    */
-  static generateAugmentsHTML(player) {
+  static async generateAugmentsHTML(player) {
     const augments = player.PlayerAugments || player.playerAugments || [];
     
     console.log('🎯 Augments data:', augments, 'for player:', player.SummonerName || player.summonerName);
@@ -775,35 +947,35 @@ export class MatchDisplayManager {
       return '';
     }
 
+    const iconMap = await getArenaAugmentIconMap();
+    console.log('📋 Icon map loaded with', iconMap.size, 'entries');
+
     let augmentsHTML = '<div class="augments-row">';
     augments.forEach((augmentId, index) => {
-      if (augmentId && augmentId !== 0) {
-        console.log(`🔍 Processing augment ${index + 1}:`, augmentId);
-        
-        // Try different URL formats for Arena augments
-        // CommunityDragon stores them in various possible locations
-        const urlFormats = [
-          `https://raw.communitydragon.org/latest/game/assets/ux/cherry/augments/icons/augment_${augmentId}.png`,
-          `https://raw.communitydragon.org/latest/game/assets/ux/cherry/augments/icons/${augmentId}.png`,
-          `https://raw.communitydragon.org/pbe/game/assets/ux/cherry/augments/icons/augment_${augmentId}.png`,
-          `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perkimages/cherry/${augmentId}.png`,
-          // Direct Data Dragon (might not work but worth trying)
-          `https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7203_Whimsy/Cherry/${augmentId}.png`
-        ];
-        
-        const primaryUrl = urlFormats[0];
-        console.log('🔗 Trying augment URL:', primaryUrl);
-        
-        // Create fallback chain
-        let errorHandler = `console.warn('Failed URL 1 for augment ${augmentId}'); this.src='${urlFormats[1]}';`;
-        errorHandler += `this.onerror=function(){console.warn('Failed URL 2'); this.src='${urlFormats[2]}';`;
-        errorHandler += `this.onerror=function(){console.warn('Failed URL 3'); this.src='${urlFormats[3]}';`;
-        errorHandler += `this.onerror=function(){console.error('All URLs failed for augment ${augmentId}'); this.parentElement.innerHTML='<div class="augment-id-display">${index + 1}</div>';};};};`;
-        
+      if (!augmentId || augmentId === 0) {
+        augmentsHTML += '<div class="augment-slot"></div>';
+        return;
+      }
+
+      console.log(`🔍 Processing augment ${index + 1}:`, augmentId);
+
+      // Try to get augment info from the map
+      const augmentInfo = getAugmentInfo(augmentId);
+
+      if (augmentInfo && augmentInfo.iconUrl) {
+        const augmentName = augmentInfo.name || `Augment ${augmentId}`;
+        console.log('✅ Found augment', augmentId, ':', augmentName);
         augmentsHTML += `
-          <div class="augment-slot" title="Augment ID: ${augmentId}">
-            <img src="${primaryUrl}" alt="Augment ${augmentId}" class="augment-icon"
-                 onerror="${errorHandler}">
+          <div class="augment-slot" title="${augmentName}">
+            <img src="${augmentInfo.iconUrl}" alt="${augmentName}" class="augment-icon"
+                 onerror="console.error('Failed to load augment icon:', '${augmentInfo.iconUrl}'); this.parentElement.innerHTML='<div class=&quot;augment-id-display&quot;>${index + 1}</div>'">
+          </div>`;
+      } else {
+        // Fallback: show the slot index if we can't resolve the icon
+        console.warn('⚠️ No icon found for augment ID:', augmentId);
+        augmentsHTML += `
+          <div class="augment-slot" title="Augment ${augmentId}">
+            <div class="augment-id-display">${index + 1}</div>
           </div>`;
       }
     });

@@ -258,6 +258,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   margin-right: 12px;
 }
@@ -275,27 +276,41 @@
 }
 
 .champion-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
   border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.champion-icon:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Summoner Spells */
 .summoner-spells {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  gap: 4px;
   flex-shrink: 0;
 }
 
 .spell-slot {
-  width: 18px;
-  height: 18px;
+  width: 30px;
+  height: 30px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.spell-slot:hover {
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .spell-icon {
@@ -310,24 +325,34 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
   margin-right: 0;
 }
 
 .items-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  max-width: 120px;
+  flex-wrap: nowrap;
+  gap: 4px;
+  max-width: none;
+  justify-content: flex-start;
 }
 
 .item-slot,
 .trinket-slot {
-  width: 18px;
-  height: 18px;
+  width: 32px;
+  height: 32px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.item-slot:hover,
+.trinket-slot:hover {
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .item-slot img,
@@ -336,7 +361,7 @@
   height: 100% !important;
   object-fit: cover;
   display: block;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .trinket-slot {
@@ -347,26 +372,37 @@
 .augments-section {
   display: flex;
   align-items: center;
-  margin-left: 8px;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: 4px;
+  padding: 0;
 }
 
 .augments-row {
   display: flex;
-  gap: 3px;
+  flex-direction: row;
+  gap: 4px;
   align-items: center;
 }
 
 .augment-slot {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   background: rgba(147, 51, 234, 0.15);
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid rgba(147, 51, 234, 0.3);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.augment-slot:hover {
+  transform: scale(1.1);
+  border-color: rgba(147, 51, 234, 0.6);
 }
 
 .augment-slot::after {
@@ -385,11 +421,11 @@
 }
 
 .augment-id-display {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
   text-align: center;
-  line-height: 24px;
+  line-height: 32px;
 }
 
 /* Stats Section */
@@ -441,6 +477,13 @@
   gap: 8px;
   width: 100%;
 }
+.Mainplayer-vs-matchStats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
 
 .team {
   display: flex;
@@ -719,6 +762,55 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Tooltips for champion, items, spells, and augments */
+.champion-icon[title]:hover::after,
+.item-slot[title]:hover::after,
+.trinket-slot[title]:hover::after,
+.spell-slot[title]:hover::after,
+.augment-slot[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-weight: 500;
+}
+
+.champion-icon[title]:hover::before,
+.item-slot[title]:hover::before,
+.trinket-slot[title]:hover::before,
+.spell-slot[title]:hover::before,
+.augment-slot[title]:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  pointer-events: none;
+  margin-bottom: 2px;
+}
+
+.champion-icon,
+.item-slot,
+.trinket-slot,
+.spell-slot,
+.augment-slot {
+  position: relative;
 }
 
 .percentage {
