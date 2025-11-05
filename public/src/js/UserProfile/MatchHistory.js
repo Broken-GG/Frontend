@@ -424,13 +424,15 @@ export class MatchDisplayManager {
     // Win status is in the match object, not mainPlayer
     const isWin = match.victory === true || match.Victory === true;
     const matchId = match.MatchId || match.matchId || Date.now();
+    const gameMode = match.GameMode || match.gameMode || 'Unknown';
     
     if (!mainPlayer) {
       throw new Error('MainPlayer data missing from match');
     }
     
     const matchCard = document.createElement('div');
-    matchCard.className = `match-card ${isWin ? 'victory' : 'defeat'}`;
+    const arenaClass = gameMode === 'Arena' ? 'arena' : '';
+    matchCard.className = `match-card ${isWin ? 'victory' : 'defeat'} ${arenaClass}`;
     console.log('✅ Match card created - isWin:', isWin, 'match.victory:', match.victory, 'className:', matchCard.className);
     matchCard.setAttribute('data-match-id', matchId);
     
@@ -480,7 +482,16 @@ export class MatchDisplayManager {
     // Generate items and summoner spells HTML before the template literal
     const itemsHTML = await this.generateItemSlotsHTML(mainPlayer);
     const spellsHTML = await this.generateSummonerSpellsHTML(mainPlayer);
-    const teamsHTML = await this.createTeamsDisplay(match);
+    const augmentsHTML = gameMode === 'Arena' ? this.generateAugmentsHTML(mainPlayer) : '';
+    
+    // Check if this is Arena mode and generate appropriate teams display
+    let teamsHTML;
+    if (gameMode === 'Arena') {
+      teamsHTML = await this.createArenaTeamsDisplay(match);
+    } else {
+      teamsHTML = await this.createTeamsDisplay(match);
+    }
+
 
     return `
       <div class="match-info">
@@ -505,6 +516,7 @@ export class MatchDisplayManager {
             ${itemsHTML}
           </div>
         </div>
+        ${augmentsHTML ? `<div class="augments-section">${augmentsHTML}</div>` : ''}
       </div>
 
       <div class="stats-section">
@@ -525,7 +537,76 @@ export class MatchDisplayManager {
   }
 
   /**
-   * Creates the teams display HTML
+   * Creates the Arena teams display HTML (2v2v2v2v2v2 format)
+   * @param {Object} match - Match data object
+   * @returns {string} HTML string for Arena teams display
+   */
+  static async createArenaTeamsDisplay(match) {
+    const allPlayers = match.AllPlayers || match.allPlayers || [];
+    
+    if (allPlayers.length === 0) {
+      return '<div class="arena-teams"><div class="no-team-data">No team data available</div></div>';
+    }
+    
+    // Group players by subteamId (Arena has subteam placement: 1, 2, 3, 4)
+    // In Arena, each duo is marked with a subteamId
+    const teamsMap = new Map();
+    
+    allPlayers.forEach(player => {
+      const teamId = player.TeamId || player.teamId || 0;
+      const subteamId = player.SubteamPlacement || player.subteamPlacement || 0;
+      
+      // Create unique key for each duo team
+      const teamKey = `${teamId}-${subteamId}`;
+      
+      if (!teamsMap.has(teamKey)) {
+        teamsMap.set(teamKey, {
+          placement: subteamId,
+          players: []
+        });
+      }
+      teamsMap.get(teamKey).players.push(player);
+    });
+    
+    // Convert map to array and sort by placement (1st, 2nd, 3rd, 4th)
+    const duoTeams = Array.from(teamsMap.values())
+      .sort((a, b) => a.placement - b.placement);
+    
+    const duoTeamsHTML = await Promise.all(
+      duoTeams.map(async (team) => {
+        const playersHTML = await Promise.all(team.players.map(player => this.createPlayerDisplay(player)));
+        const placementLabel = this.getPlacementLabel(team.placement);
+        return `
+          <div class="arena-duo placement-${team.placement}">
+            <div class="arena-placement">${placementLabel}</div>
+            ${playersHTML.join('')}
+          </div>
+        `;
+      })
+    );
+    
+    return `
+      <div class="arena-teams">
+        ${duoTeamsHTML.join('')}
+      </div>
+    `;
+  }
+
+  /**
+   * Gets the placement label with ordinal suffix
+   * @param {number} placement - Placement number (1, 2, 3, 4)
+   * @returns {string} Formatted placement label
+   */
+  static getPlacementLabel(placement) {
+    if (!placement || placement === 0) return '';
+    
+    const suffixes = ['th', 'st', 'nd', 'rd'];
+    const value = placement % 100;
+    return placement + (suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0]);
+  }
+
+  /**
+   * Creates the teams display HTML (5v5 format)
    * @param {Object} match - Match data object
    * @returns {string} HTML string for teams display
    */
@@ -677,6 +758,58 @@ export class MatchDisplayManager {
       itemsHTML += `<div class="trinket-slot"></div>`;
     }
     return itemsHTML;
+  }
+
+  /**
+   * Generates Arena augments HTML
+   * @param {Object} player - Player data object
+   * @returns {string} HTML string for augments
+   */
+  static generateAugmentsHTML(player) {
+    const augments = player.PlayerAugments || player.playerAugments || [];
+    
+    console.log('🎯 Augments data:', augments, 'for player:', player.SummonerName || player.summonerName);
+    
+    if (!augments || augments.length === 0) {
+      console.log('⚠️ No augments found for player');
+      return '';
+    }
+
+    let augmentsHTML = '<div class="augments-row">';
+    augments.forEach((augmentId, index) => {
+      if (augmentId && augmentId !== 0) {
+        console.log(`🔍 Processing augment ${index + 1}:`, augmentId);
+        
+        // Try different URL formats for Arena augments
+        // CommunityDragon stores them in various possible locations
+        const urlFormats = [
+          `https://raw.communitydragon.org/latest/game/assets/ux/cherry/augments/icons/augment_${augmentId}.png`,
+          `https://raw.communitydragon.org/latest/game/assets/ux/cherry/augments/icons/${augmentId}.png`,
+          `https://raw.communitydragon.org/pbe/game/assets/ux/cherry/augments/icons/augment_${augmentId}.png`,
+          `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perkimages/cherry/${augmentId}.png`,
+          // Direct Data Dragon (might not work but worth trying)
+          `https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7203_Whimsy/Cherry/${augmentId}.png`
+        ];
+        
+        const primaryUrl = urlFormats[0];
+        console.log('🔗 Trying augment URL:', primaryUrl);
+        
+        // Create fallback chain
+        let errorHandler = `console.warn('Failed URL 1 for augment ${augmentId}'); this.src='${urlFormats[1]}';`;
+        errorHandler += `this.onerror=function(){console.warn('Failed URL 2'); this.src='${urlFormats[2]}';`;
+        errorHandler += `this.onerror=function(){console.warn('Failed URL 3'); this.src='${urlFormats[3]}';`;
+        errorHandler += `this.onerror=function(){console.error('All URLs failed for augment ${augmentId}'); this.parentElement.innerHTML='<div class="augment-id-display">${index + 1}</div>';};};};`;
+        
+        augmentsHTML += `
+          <div class="augment-slot" title="Augment ID: ${augmentId}">
+            <img src="${primaryUrl}" alt="Augment ${augmentId}" class="augment-icon"
+                 onerror="${errorHandler}">
+          </div>`;
+      }
+    });
+    augmentsHTML += '</div>';
+    
+    return augmentsHTML;
   }
 
   static loadMoreMatches() {
