@@ -256,11 +256,24 @@
 /* Champion Section */
 .champion-section {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 6px;
   margin-right: 12px;
+}
+
+.champion-spells-items-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.champion-with-augments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .champion-section > div:first-child {
@@ -276,8 +289,8 @@
 }
 
 .champion-icon {
-  width: 64px;
-  height: 64px;
+  width: 50px;
+  height: 50px;
   border-radius: 8px;
   border: 2px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
@@ -292,14 +305,14 @@
 /* Summoner Spells */
 .summoner-spells {
   display: flex;
-  flex-direction: row;
-  gap: 4px;
+  flex-direction: column;
+  gap: 2px;
   flex-shrink: 0;
 }
 
 .spell-slot {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -330,17 +343,16 @@
 }
 
 .items-row {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: repeat(4, 32px);
   max-width: none;
   justify-content: flex-start;
 }
 
 .item-slot,
 .trinket-slot {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -373,21 +385,21 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  margin-left: 0;
+  margin-top: 5%;
   width: 100%;
-  margin-top: 4px;
-  padding: 0;
 }
 
 .augments-row {
   display: flex;
   flex-direction: row;
-  gap: 4px;
+  gap: 3px;
   align-items: center;
 }
 
 .augment-slot {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   background: rgba(147, 51, 234, 0.15);
   border-radius: 6px;
   border: 1px solid rgba(147, 51, 234, 0.3);
@@ -428,6 +440,59 @@
   line-height: 32px;
 }
 
+/* Augment Tier Colors */
+.augment-empty {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.augment-empty:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.augment-empty::after {
+  background: none;
+}
+
+.augment-silver {
+  background: rgba(192, 192, 192, 0.15);
+  border-color: rgba(192, 192, 192, 0.4);
+}
+
+.augment-silver:hover {
+  border-color: rgba(192, 192, 192, 0.7);
+}
+
+.augment-silver::after {
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.15) 0%, transparent 100%);
+}
+
+.augment-gold {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.augment-gold:hover {
+  border-color: rgba(255, 215, 0, 0.7);
+}
+
+.augment-gold::after {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, transparent 100%);
+}
+
+.augment-prismatic {
+  background: rgba(147, 51, 234, 0.15);
+  border-color: rgba(147, 51, 234, 0.4);
+}
+
+.augment-prismatic:hover {
+  border-color: rgba(147, 51, 234, 0.7);
+}
+
+.augment-prismatic::after {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, transparent 100%);
+}
+
 /* Stats Section */
 .stats-section {
   display: flex;
@@ -435,6 +500,8 @@
   align-items: center;
   min-width: 85px;
   margin-right: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  padding-left: 12px;
 }
 
 .kda {
@@ -535,6 +602,7 @@
 .arena-teams {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
   width: 100%;
 }
@@ -543,13 +611,14 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px 6px 28px;
+  gap: 4px;
+  padding: 6px 6px 6px 28px;
   background: rgba(147, 51, 234, 0.08);
   border-radius: 6px;
   border: 1px solid rgba(147, 51, 234, 0.25);
   transition: all 0.2s ease;
   position: relative;
+  width: fit-content;
 }
 
 .arena-duo:hover {
@@ -559,9 +628,10 @@
 }
 
 .arena-duo .team-player {
-  flex: 1;
+  flex: 0 0 100px;
   min-width: 0;
   padding: 0;
+  width: 120px;
 }
 
 .arena-duo::before {
@@ -762,55 +832,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-/* Tooltips for champion, items, spells, and augments */
-.champion-icon[title]:hover::after,
-.item-slot[title]:hover::after,
-.trinket-slot[title]:hover::after,
-.spell-slot[title]:hover::after,
-.augment-slot[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-  pointer-events: none;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  font-weight: 500;
-}
-
-.champion-icon[title]:hover::before,
-.item-slot[title]:hover::before,
-.trinket-slot[title]:hover::before,
-.spell-slot[title]:hover::before,
-.augment-slot[title]:hover::before {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: rgba(0, 0, 0, 0.9);
-  z-index: 1000;
-  pointer-events: none;
-  margin-bottom: 2px;
-}
-
-.champion-icon,
-.item-slot,
-.trinket-slot,
-.spell-slot,
-.augment-slot {
-  position: relative;
 }
 
 .percentage {

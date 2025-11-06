@@ -168,11 +168,13 @@ async function getArenaAugmentIconMap() {
       null;
 
     const name = aug.name || aug.displayName || aug.title || `Augment ${id}`;
+    const rarity = aug.rarity || aug.tier || aug.rarityType || null;
 
     if (id != null && iconPath) {
       map.set(Number(id), {
         iconUrl: toCDragonUrl(iconPath),
-        name: name
+        name: name,
+        rarity: rarity
       });
     }
   }
@@ -666,7 +668,7 @@ export class MatchDisplayManager {
       </div>
 
       <div class="champion-section">
-        <div>
+        <div class="champion-spells-items-row">
           <div class="champion-container">
             <img src="${championImageUrl}" alt="${championName}" class="champion-icon" title="${championName}"
                  onerror="this.src='${championBaseUrl}/Unknown.png'">
@@ -674,10 +676,10 @@ export class MatchDisplayManager {
           <div class="summoner-spells">
             ${spellsHTML}
           </div>
-        </div>
-        <div class="items-section">
-          <div class="items-row">
-            ${itemsHTML}
+          <div class="items-section">
+            <div class="items-row">
+              ${itemsHTML}
+            </div>
           </div>
         </div>
         ${augmentsHTML ? `<div class="augments-section">${augmentsHTML}</div>` : ''}
@@ -953,7 +955,7 @@ export class MatchDisplayManager {
     let augmentsHTML = '<div class="augments-row">';
     augments.forEach((augmentId, index) => {
       if (!augmentId || augmentId === 0) {
-        augmentsHTML += '<div class="augment-slot"></div>';
+        augmentsHTML += '<div class="augment-slot augment-empty"></div>';
         return;
       }
 
@@ -964,9 +966,21 @@ export class MatchDisplayManager {
 
       if (augmentInfo && augmentInfo.iconUrl) {
         const augmentName = augmentInfo.name || `Augment ${augmentId}`;
-        console.log('✅ Found augment', augmentId, ':', augmentName);
+        const rarity = augmentInfo.rarity || 0;
+        let rarityClass = '';
+        
+        // Map rarity to tier class (0=silver, 1=gold, 2=prismatic)
+        if (rarity === 2 || String(rarity).toLowerCase().includes('prismatic')) {
+          rarityClass = 'prismatic';
+        } else if (rarity === 1 || String(rarity).toLowerCase().includes('gold')) {
+          rarityClass = 'gold';
+        } else {
+          rarityClass = 'silver';
+        }
+        
+        console.log('✅ Found augment', augmentId, ':', augmentName, 'rarity:', rarity, 'class:', rarityClass);
         augmentsHTML += `
-          <div class="augment-slot" title="${augmentName}">
+          <div class="augment-slot augment-${rarityClass}" title="${augmentName}">
             <img src="${augmentInfo.iconUrl}" alt="${augmentName}" class="augment-icon"
                  onerror="console.error('Failed to load augment icon:', '${augmentInfo.iconUrl}'); this.parentElement.innerHTML='<div class=&quot;augment-id-display&quot;>${index + 1}</div>'">
           </div>`;
