@@ -83,7 +83,7 @@ class ApiService {
   }
 
   async getSummonerInfo(summonerName, tagLine) {
-    return this.get(`/SummonerInfo/${summonerName}/${tagLine}`);
+    return this.get(`/Summoner/${summonerName}/${tagLine}`);
   }
 }
 
@@ -162,7 +162,7 @@ async function handleSearch(event) {
     
     // Make API call to validate summoner exists
     console.log('Making API call to validate summoner...');
-    const apiUrl = `${apiService.baseUrl}/SummonerInfo/${summonerName}/${tagLine}`;
+    const apiUrl = `${apiService.baseUrl}/Summoner/${summonerName}/${tagLine}`;
     console.log('API URL:', apiUrl);
     
     const summonerData = await apiService.getSummonerInfo(summonerName, tagLine);

@@ -92,25 +92,31 @@ export class UserPageService {
   }
 
   async getSummonerInfo(summonerName, tagLine) {
-    return this.makeRequest(`/SummonerInfo/${encodeURIComponent(summonerName)}/${encodeURIComponent(tagLine)}`, { 
+    return this.makeRequest(`/Summoner/${encodeURIComponent(summonerName)}/${encodeURIComponent(tagLine)}`, { 
       method: 'GET' 
     });
   }
 
   async getMatchHistoryBySummoner(summonerName, tagLine, start = 0, count = 10) {
-    return this.makeRequest(`/MatchInfo/summoner/${encodeURIComponent(summonerName)}/${encodeURIComponent(tagLine)}?start=${start}&count=${count}`, { 
+    // First get summoner info to retrieve PUUID
+    const summonerData = await this.getSummonerInfo(summonerName, tagLine);
+    if (!summonerData || !summonerData.puuid) {
+      throw new Error('Could not retrieve summoner PUUID');
+    }
+    // Then get match history using PUUID
+    return this.makeRequest(`/Match/${encodeURIComponent(summonerData.puuid)}?start=${start}&count=${count}`, { 
       method: 'GET' 
     });
   }
 
   async getRankedInfo(puuid) {
-    return this.makeRequest(`/SidePanelInfo/ranked/${encodeURIComponent(puuid)}`, { 
+    return this.makeRequest(`/Ranked/${encodeURIComponent(puuid)}`, { 
       method: 'GET' 
     });
   }
 
   async getMasteryInfo(puuid) {
-    return this.makeRequest(`/SidePanelInfo/mastery/${encodeURIComponent(puuid)}`, { 
+    return this.makeRequest(`/Mastery/${encodeURIComponent(puuid)}`, { 
       method: 'GET' 
     });
   }

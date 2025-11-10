@@ -2,7 +2,7 @@
 const config = {
   api: {
     // Update this to match your C# backend URL
-    baseUrl: 'https://localhost:5001/api', // Matches your running backend
+    baseUrl: 'http://localhost:5000/api', // Matches your running backend
     
     // API endpoints
     endpoints: {
@@ -10,8 +10,10 @@ const config = {
       userProfile: (userId) => `/users/${userId}`,
       userStats: (userId) => `/users/${userId}/stats`,
       userMatches: (userId) => `/users/${userId}/matches`,
-      summonerInfo: (summonerName, tagline) => `/SummonerInfo/${summonerName}/${tagline}`,
-      matchHistory: (puuid) => `/MatchInfo/${puuid}`,
+      summonerInfo: (summonerName, tagline) => `/Summoner/${summonerName}/${tagline}`,
+      matchHistory: (puuid) => `/Match/${puuid}`,
+      masteryInfo: (puuid) => `/Mastery/${puuid}`,
+      rankedInfo: (puuid) => `/Ranked/${puuid}`,
     },
     
     // Request timeout in milliseconds
