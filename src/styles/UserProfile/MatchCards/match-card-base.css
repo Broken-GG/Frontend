@@ -1,0 +1,183 @@
+/* Match Card Base Styles and Layout */
+
+/* Matches Container */
+.matches {
+  display: flex;
+  flex-direction: column;
+  gap: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0;
+  overflow: visible !important;
+  max-height: none !important;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Match Card */
+.match-card {
+  display: flex;
+  align-items: center;
+  border-radius: 7px;
+  padding: 14px 16px;
+  min-height: 90px;
+  transition: all 0.2s ease;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.match-card:hover {
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.match-card.victory {
+  background: linear-gradient(90deg, rgba(30, 144, 255, 0.2) 0%, rgba(30, 144, 255, 0.05) 100%);
+  border-left: 7px solid #1e90ff;
+}
+
+.match-card.defeat {
+  background: linear-gradient(90deg, rgba(255, 71, 87, 0.2) 0%, rgba(255, 71, 87, 0.05) 100%);
+  border-left: 7px solid #ff4757;
+}
+
+/* Arena specific match card adjustments */
+.match-card.arena {
+  min-height: 120px;
+}
+
+.match-card.arena .teams-section {
+  max-width: 550px;
+}
+
+/* Match Info Section */
+.match-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 96px;
+  margin-right: 19px;
+}
+
+.game-type {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 5px;
+}
+
+.time-ago {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 5px;
+}
+
+.game-result {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.game-result.win {
+  background: #1e90ff;
+  color: white;
+}
+
+.game-result.loss {
+  background: #ff4757;
+  color: white;
+}
+
+.game-duration {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Stats Section */
+.stats-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 85px;
+  margin-right: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  padding-left: 12px;
+}
+
+.kda {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.kda-numbers {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+}
+
+.kda-ratio {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.cs-vision {
+  text-align: center;
+}
+
+.cs-vision div {
+  font-size: 10px;
+  color: #9ca3af;
+  line-height: 1.3;
+}
+
+/* No Matches State */
+.no-matches {
+  text-align: center;
+  padding: 40px;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.no-team-data {
+  text-align: center;
+  padding: 20px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* Responsive Match History */
+@media (max-width: 768px) {
+  .match-card {
+    flex-direction: column;
+    padding: 16px 12px;
+    min-height: auto;
+  }
+
+  .match-info,
+  .champion-section,
+  .items-section,
+  .stats-section {
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+
+  .teams-section {
+    width: 100%;
+  }
+
+  .team-vs-team {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .blue-team,
+  .red-team {
+    border: none;
+    padding: 0;
+  }
+}

@@ -1,8 +1,18 @@
 /* User Profile Page - Main Stylesheet */
 
-/* Import component stylesheets */
-@import url('user-profile.css');
-@import url('match-history.css');
+/* Profile Page Styles */
+@import './Profile/profile-header.css';
+@import './Profile/profile-layout.css';
+@import './Profile/profile-ranked.css';
+@import './Profile/profile-mastery.css';
+
+/* Match History Styles */
+@import './match-stats-header.css';
+@import './MatchCards/match-card-base.css';
+@import './MatchCards/match-card-champion.css';
+@import './MatchCards/match-card-augments.css';
+@import './MatchCards/match-card-teams.css';
+@import './match-utilities.css';
 
 /* Base Styles */
 body {

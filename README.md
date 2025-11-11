@@ -1,102 +1,123 @@
-# Frontend - Broken.GG Web Application
+# 🎮 BrokenGG - League of Legends Match Tracker
+
 [![CI/CD Integration](https://github.com/Broken-GG/Frontend/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Broken-GG/Frontend/actions)
 
+A modern, clean web application for tracking League of Legends match history, player statistics, and performance analytics.
 
-Static web application for League of Legends match history tracking.
+## 📁 Project Structure
 
-## 🏗 Architecture
-
-### Project Structure
 ```
 Frontend/
-├── public/
-│   ├── index.html                 # Home page with search
-│   ├── src/
+├── src/
+│   ├── js/
+│   │   ├── api/
+│   │   │   └── ApiService.js          # Centralized API service
+│   │   ├── components/
+│   │   │   └── MatchCard.js           # Match card component
 │   │   ├── config/
-│   │   │   └── config.js         # Configuration (API endpoints)
-│   │   ├── js/
-│   │   │   ├── HomePage/
-│   │   │   │   └── index.js      # Search functionality
-│   │   │   └── UserProfile/
-│   │   │       ├── user.js       # Main profile logic
-│   │   │       ├── MatchHistory.js   # Match display
-│   │   │       └── SideBarInfo.js    # Ranked/Mastery display
+│   │   │   └── config.js              # App configuration (env-aware)
 │   │   ├── pages/
-│   │   │   └── user.html         # User profile page
-│   │   └── styles/
-│   │       ├── main.css          # Global styles
-│   │       ├── search.css        # Search page styles
-│   │       └── UserProfile/      # Profile page styles
-│   └── server.py                 # Development server (Python)
-├── Dockerfile                     # Production container
-├── nginx.conf                     # Nginx configuration
-├── package.json                   # Project metadata
-└── README.md                      # This file
+│   │   │   ├── home/
+│   │   │   │   └── Home.js            # Home page logic
+│   │   │   └── profile/
+│   │   │       ├── Profile.js         # Profile page main
+│   │   │       ├── MatchDisplayManager.js  # Match display logic
+│   │   │       └── SidebarInfo.js     # Sidebar components
+│   │   ├── services/
+│   │   │   ├── DataDragonService.js   # Data Dragon API
+│   │   │   └── AugmentsService.js     # Arena augments
+│   │   └── utils/
+│   │       ├── logger.js              # Environment-aware logging
+│   │       └── errorHandler.js        # Centralized error handling
+│   ├── styles/                        # CSS files
+│   └── pages/
+│       └── user.html                  # User profile page
+├── public/                            # Static assets only
+├── index.html                         # Home page
+├── package.json                       # Dependencies and scripts
+├── vite.config.js                     # Vite build configuration
+├── .env.example                       # Environment variables template
+├── Dockerfile                         # Multi-stage Docker build
+├── docker-compose.yml                 # Docker Compose config
+├── nginx.conf                         # Nginx configuration
+└── server.py                          # Development server (Python fallback)
 ```
-
-## 🔧 Technologies
-
-- **HTML5** - Semantic markup
-- **CSS3** - Modern styling (Grid, Flexbox)
-- **JavaScript ES6+** - Modules, async/await
-- **Nginx** - Production web server (in Docker)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Modern web browser (Chrome, Firefox, Edge, Safari)
+
+- **Node.js** >= 18.0.0
+- **npm** or **yarn**
+- Modern web browser
 - Backend API running (see Backend README)
-- Optional: Python 3 or Node.js for development server
 
-### Development Setup
+### Installation
 
-1. **Navigate to Frontend folder**
+1. **Clone the repository**
    ```bash
+   git clone https://github.com/Broken-GG/Frontend.git
    cd Frontend
    ```
 
-2. **Option 1: Python Server** (Recommended for development)
+2. **Install dependencies**
    ```bash
-   python server.py
+   npm install
    ```
-   Or:
+
+3. **Configure environment**
    ```bash
-   python -m http.server 8000 --directory public
+   cp .env.example .env
+   # Edit .env with your configuration
    ```
 
-3. **Option 2: Node.js Server**
+4. **Start development server**
    ```bash
-   npx serve public -p 8000
+   npm run dev
    ```
 
-4. **Option 3: PHP Server**
-   ```bash
-   php -S localhost:8000 -t public
-   ```
+   The app will be available at `http://localhost:3000`
 
-5. **Open in browser**
-   ```
-   http://localhost:8000
-   ```
+### Alternative Development Servers
 
-### Configuration
-
-Update API endpoint in `public/src/config/config.js` if needed:
-
-```javascript
-const CONFIG = {
-  API: {
-    BASE_URL: 'http://localhost:5000/api',
-    FALLBACK_URL: 'https://localhost:5001/api',
-  }
-};
+**Using Python (Simple HTTP Server):**
+```bash
+npm run serve
+# or
+python server.py
 ```
+
+**Using Vite Preview (after build):**
+```bash
+npm run build
+npm run preview
+```
+
+## 📦 Build & Deployment
+
+### Development Build
+```bash
+npm run dev
+```
+
+### Production Build
+```bash
+npm run build
+```
+
+Build output will be in the `dist/` directory.
 
 ## 🐳 Docker
 
-### Build
+### Build and Run
 ```bash
 docker build -t brokengg-frontend .
+docker run -p 80:80 brokengg-frontend
+```
+
+### Using Docker Compose
+```bash
+docker-compose up -d
 ```
 
 ### Run
