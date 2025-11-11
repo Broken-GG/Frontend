@@ -1,0 +1,48 @@
+/* Ranked Information Styles */
+
+/* Ranked Info */
+.rank-info {
+  padding: 0.6rem;  /* 0.5rem * 1.2 */
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  margin-bottom: 0.9rem;  /* 0.75rem * 1.2 */
+}
+
+.rank-info:last-child {
+  margin-bottom: 0;
+}
+
+.rank-tier {
+  color: #22c55e;
+  font-size: 1.05rem;  /* 0.875rem * 1.2 */
+  font-weight: 700;
+  margin-bottom: 0.3rem;  /* 0.25rem * 1.2 */
+}
+
+.rank-lp {
+  color: #d1d5db;
+  font-size: 0.9rem;  /* 0.75rem * 1.2 */
+  margin-bottom: 0.3rem;  /* 0.25rem * 1.2 */
+}
+
+.rank-winrate {
+  color: #9ca3af;
+  font-size: 0.84rem;  /* 0.7rem * 1.2 */
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.rank-winrate-percent {
+  color: #22c55e;
+  font-size: 0.84rem;  /* 0.7rem * 1.2 */
+  font-weight: 600;
+  display: inline-block;
+}
+
+.unranked {
+  color: #6b7280;
+  font-size: 1.05rem;  /* 0.875rem * 1.2 */
+  font-style: italic;
+  text-align: center;
+  padding: 1.2rem 0.6rem;  /* 1rem * 1.2, 0.5rem * 1.2 */
+}

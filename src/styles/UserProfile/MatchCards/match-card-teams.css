@@ -1,0 +1,198 @@
+/* Teams Display for Normal and Arena Modes */
+
+/* Teams Section */
+.teams-section {
+  flex: 1;
+  min-width: 280px;
+  max-width: 450px;
+}
+
+.team-vs-team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.Mainplayer-vs-matchStats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.team {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.blue-team {
+  border-right: 1px solid rgba(30, 144, 255, 0.3);
+  padding-right: 6px;
+}
+
+.red-team {
+  border-left: 1px solid rgba(255, 71, 87, 0.3);
+  padding-left: 6px;
+}
+
+.vs-divider {
+  font-size: 9px;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.team-player {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.team-champion-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.teams-section .team-arena {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Arena Mode Teams Display */
+.arena-teams {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.arena-duo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 28px;
+  background: rgba(147, 51, 234, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(147, 51, 234, 0.25);
+  transition: all 0.2s ease;
+  position: relative;
+  width: fit-content;
+}
+
+.arena-duo:hover {
+  background: rgba(147, 51, 234, 0.12);
+  border-color: rgba(147, 51, 234, 0.4);
+  transform: translateX(2px);
+}
+
+.arena-duo .team-player {
+  flex: 0 0 100px;
+  min-width: 0;
+  padding: 0;
+  width: 120px;
+}
+
+.arena-duo::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, rgba(147, 51, 234, 0.8), rgba(147, 51, 234, 0.3));
+  border-radius: 6px 0 0 6px;
+}
+
+/* Arena Placement Indicator */
+.arena-placement {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1;
+}
+
+/* Placement-specific colors */
+.arena-duo.placement-1 {
+  background: rgba(255, 215, 0, 0.12);
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.arena-duo.placement-1::before {
+  background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9), rgba(255, 215, 0, 0.5));
+}
+
+.arena-duo.placement-1 .arena-placement {
+  color: rgba(255, 215, 0, 0.9);
+}
+
+.arena-duo.placement-2 {
+  background: rgba(192, 192, 192, 0.12);
+  border-color: rgba(192, 192, 192, 0.4);
+}
+
+.arena-duo.placement-2::before {
+  background: linear-gradient(to bottom, rgba(192, 192, 192, 0.9), rgba(192, 192, 192, 0.5));
+}
+
+.arena-duo.placement-2 .arena-placement {
+  color: rgba(192, 192, 192, 0.9);
+}
+
+.arena-duo.placement-3 {
+  background: rgba(205, 127, 50, 0.12);
+  border-color: rgba(205, 127, 50, 0.4);
+}
+
+.arena-duo.placement-3::before {
+  background: linear-gradient(to bottom, rgba(205, 127, 50, 0.9), rgba(205, 127, 50, 0.5));
+}
+
+.arena-duo.placement-3 .arena-placement {
+  color: rgba(205, 127, 50, 0.9);
+}
+
+.player-name {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 12px;
+  color: #d1d5db;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 95px;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.player-name:hover {
+  color: #fff;
+}
+
+.team-player.searched-player {
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+.team-player.searched-player .player-name {
+  color: #ffd700;
+  font-weight: 600;
+}
