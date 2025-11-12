@@ -3,11 +3,30 @@
  * Handles all HTTP requests to the backend API
  */
 
-import config from '@/js/config/config.js';
-import logger from '@/js/utils/logger.js';
-import { ApiError } from '@/js/utils/errorHandler.js';
+import config from '@/ts/config/config.js';
+import logger from '@/ts/utils/logger.js';
+import { ApiError } from '@/ts/utils/errorHandler.js';
+import type { SummonerInfo, MatchHistory, RankedInfo, MasteryInfo } from '@/ts/types/api.types.js';
+
+// ============================================================================
+// Type Definitions
+// ============================================================================
+
+interface RequestConfig extends RequestInit {
+  headers?: Record<string, string>;
+}
+
+// ============================================================================
+// ApiService Class
+// ============================================================================
 
 class ApiService {
+  private baseUrl: string;
+  private fallbackUrl: string;
+  private timeout: number;
+  private defaultHeaders: Record<string, string>;
+  private defaultOptions: RequestInit;
+
   constructor() {
     this.baseUrl = config.api.baseUrl;
     this.fallbackUrl = config.api.fallbackUrl;
@@ -19,8 +38,8 @@ class ApiService {
   /**
    * Make an HTTP request with automatic fallback
    */
-  async request(endpoint, options = {}) {
-    const requestConfig = {
+  async request<T = unknown>(endpoint: string, options: RequestConfig = {}): Promise<T> {
+    const requestConfig: RequestConfig = {
       ...this.defaultOptions,
       headers: {
         ...this.defaultHeaders,
@@ -29,25 +48,27 @@ class ApiService {
       ...options,
     };
 
-    return this._tryRequestWithFallback(endpoint, requestConfig);
+    return this._tryRequestWithFallback<T>(endpoint, requestConfig);
   }
 
   /**
    * Try primary URL, fallback to secondary if it fails
    */
-  async _tryRequestWithFallback(endpoint, config) {
+  private async _tryRequestWithFallback<T>(endpoint: string, config: RequestConfig): Promise<T> {
     try {
-      return await this._fetchFromUrl(this.baseUrl + endpoint, config);
+      return await this._fetchFromUrl<T>(this.baseUrl + endpoint, config);
     } catch (error) {
-      logger.warn('Primary API request failed, trying fallback:', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.warn('Primary API request failed, trying fallback:', errorMessage);
       
       try {
-        return await this._fetchFromUrl(this.fallbackUrl + endpoint, config);
+        return await this._fetchFromUrl<T>(this.fallbackUrl + endpoint, config);
       } catch (fallbackError) {
         logger.error('Both API endpoints failed');
+        const originalError = error as ApiError;
         throw new ApiError(
-          `Failed to fetch data from API: ${error.message}`,
-          error.statusCode || 500
+          `Failed to fetch data from API: ${errorMessage}`,
+          originalError.statusCode || 500
         );
       }
     }
@@ -56,7 +77,7 @@ class ApiService {
   /**
    * Fetch data from a specific URL
    */
-  async _fetchFromUrl(url, config) {
+  private async _fetchFromUrl<T>(url: string, config: RequestConfig): Promise<T> {
     logger.debug('API Request:', url);
 
     const controller = new AbortController();
@@ -86,11 +107,11 @@ class ApiService {
 
       const data = await response.json();
       logger.debug('API Response:', data);
-      return data;
+      return data as T;
     } catch (error) {
       clearTimeout(timeoutId);
 
-      if (error.name === 'AbortError') {
+      if (error instanceof Error && error.name === 'AbortError') {
         throw new ApiError('Request timeout', 408);
       }
 
@@ -98,22 +119,23 @@ class ApiService {
         throw error;
       }
 
-      throw new ApiError(error.message || 'Network request failed', 500);
+      const errorMessage = error instanceof Error ? error.message : 'Network request failed';
+      throw new ApiError(errorMessage, 500);
     }
   }
 
   /**
    * GET request
    */
-  async get(endpoint) {
-    return this.request(endpoint, { method: 'GET' });
+  async get<T = unknown>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'GET' });
   }
 
   /**
    * POST request
    */
-  async post(endpoint, data) {
-    return this.request(endpoint, {
+  async post<T = unknown>(endpoint: string, data: unknown): Promise<T> {
+    return this.request<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -122,8 +144,8 @@ class ApiService {
   /**
    * PUT request
    */
-  async put(endpoint, data) {
-    return this.request(endpoint, {
+  async put<T = unknown>(endpoint: string, data: unknown): Promise<T> {
+    return this.request<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
@@ -132,8 +154,8 @@ class ApiService {
   /**
    * DELETE request
    */
-  async delete(endpoint) {
-    return this.request(endpoint, { method: 'DELETE' });
+  async delete<T = unknown>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'DELETE' });
   }
 
   // ============================================================================
@@ -143,8 +165,8 @@ class ApiService {
   /**
    * Get summoner information
    */
-  async getSummonerInfo(summonerName, tagLine) {
-    return this.get(
+  async getSummonerInfo(summonerName: string, tagLine: string): Promise<SummonerInfo> {
+    return this.get<SummonerInfo>(
       `/Summoner/${encodeURIComponent(summonerName)}/${encodeURIComponent(tagLine)}`
     );
   }
@@ -156,8 +178,13 @@ class ApiService {
   /**
    * Get match history by summoner
    */
-  async getMatchHistoryBySummoner(summonerName, tagLine, start = 0, count = 10) {
-    return this.get(
+  async getMatchHistoryBySummoner(
+    summonerName: string,
+    tagLine: string,
+    start: number = 0,
+    count: number = 10
+  ): Promise<MatchHistory> {
+    return this.get<MatchHistory>(
       `/Match/${encodeURIComponent(summonerName)}/${encodeURIComponent(tagLine)}?start=${start}&count=${count}`
     );
   }
@@ -165,8 +192,12 @@ class ApiService {
   /**
    * Get match history by PUUID
    */
-  async getMatchHistoryByPuuid(puuid, start = 0, count = 10) {
-    return this.get(`/Match/${encodeURIComponent(puuid)}?start=${start}&count=${count}`);
+  async getMatchHistoryByPuuid(
+    puuid: string,
+    start: number = 0,
+    count: number = 10
+  ): Promise<MatchHistory> {
+    return this.get<MatchHistory>(`/Match/${encodeURIComponent(puuid)}?start=${start}&count=${count}`);
   }
 
   // ============================================================================
@@ -176,8 +207,8 @@ class ApiService {
   /**
    * Get ranked information
    */
-  async getRankedInfo(puuid) {
-    return this.get(`/Ranked/${encodeURIComponent(puuid)}`);
+  async getRankedInfo(puuid: string): Promise<RankedInfo> {
+    return this.get<RankedInfo>(`/Ranked/${encodeURIComponent(puuid)}`);
   }
 
   // ============================================================================
@@ -187,8 +218,8 @@ class ApiService {
   /**
    * Get champion mastery information
    */
-  async getMasteryInfo(puuid) {
-    return this.get(`/Mastery/${encodeURIComponent(puuid)}`);
+  async getMasteryInfo(puuid: string): Promise<MasteryInfo> {
+    return this.get<MasteryInfo>(`/Mastery/${encodeURIComponent(puuid)}`);
   }
 }
 

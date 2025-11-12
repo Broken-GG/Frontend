@@ -11,7 +11,7 @@ export const logger = {
   /**
    * Log debug information (only in development)
    */
-  debug: (...args) => {
+  debug: (...args: any[]) => {
     if (isDevelopment) {
       console.log(...args);
     }
@@ -20,7 +20,7 @@ export const logger = {
   /**
    * Log informational messages
    */
-  info: (...args) => {
+  info: (...args: any[]) => {
     if (isDevelopment) {
       console.info(...args);
     }
@@ -29,21 +29,21 @@ export const logger = {
   /**
    * Log warnings (always shown)
    */
-  warn: (...args) => {
+  warn: (...args: any[]) => {
     console.warn(...args);
   },
 
   /**
    * Log errors (always shown)
    */
-  error: (...args) => {
+  error: (...args: any[]) => {
     console.error(...args);
   },
 
   /**
    * Log successful operations (only in development)
    */
-  success: (message) => {
+  success: (message: string) => {
     if (isDevelopment) {
       console.log(`✅ ${message}`);
     }
@@ -52,7 +52,7 @@ export const logger = {
   /**
    * Group logs together (only in development)
    */
-  group: (label, callback) => {
+  group: (label: string, callback: () => void) => {
     if (isDevelopment) {
       console.group(label);
       callback();

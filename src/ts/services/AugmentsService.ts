@@ -3,18 +3,21 @@
  * Handles Arena mode augments data from Community Dragon
  */
 
-import config from '@/js/config/config.js';
-import logger from '@/js/utils/logger.js';
+import config from '@/ts/config/config.js';
+import logger from '@/ts/utils/logger.js';
+import type { AugmentData } from '@/ts/types/api.types.js';
 
 class AugmentsService {
-  constructor() {
-    this.cachedAugmentIconMap = null;
+    private cachedAugmentIconMap: Map<number | string, AugmentData> | null;
+
+    constructor() {
+        this.cachedAugmentIconMap = null;
   }
 
   /**
    * Convert icon path to Community Dragon URL
    */
-  toCDragonUrl(iconPath, version = 'latest') {
+  toCDragonUrl(iconPath: string, version = 'latest'): string | null {
     if (!iconPath) return null;
     if (/^https?:\/\//i.test(iconPath)) {
       return iconPath.replace('/pbe/', '/latest/');
@@ -45,7 +48,7 @@ class AugmentsService {
   /**
    * Get Arena augment icon map
    */
-  async getAugmentIconMap() {
+  async getAugmentIconMap(): Promise<Map<number | string, AugmentData>> {
     if (this.cachedAugmentIconMap) {
       return this.cachedAugmentIconMap;
     }
@@ -108,11 +111,12 @@ class AugmentsService {
   /**
    * Get augment info by ID
    */
-  getAugmentInfo(augmentId) {
+  async getAugmentInfo(augmentId: number | string): Promise<AugmentData | null> {
     if (!this.cachedAugmentIconMap || !augmentId) return null;
     return (
       this.cachedAugmentIconMap.get(Number(augmentId)) ||
-      this.cachedAugmentIconMap.get(String(augmentId))
+      this.cachedAugmentIconMap.get(String(augmentId)) ||
+      null
     );
   }
 }

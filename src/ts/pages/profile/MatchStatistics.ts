@@ -2,18 +2,17 @@
  * Match Statistics Calculator
  * Calculates match stats, win rates, KDA, and role distribution
  */
-
-import logger from '@/js/utils/logger.js';
+import type { MatchData, MatchStatistics as MatchStats } from '@/ts/types/api.types.js';
 
 export class MatchStatistics {
   /**
    * Calculate overall match statistics
    */
-  static calculateMatchStats(matches) {
+  static calculateMatchStats(matches: MatchData[]): MatchStats {
     const totalMatches = matches.length;
     const wins = matches.filter((m) => m.victory === true || m.Victory === true).length;
     const losses = totalMatches - wins;
-    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(0) : 0;
+    const winRate = totalMatches > 0 ? Number(((wins / totalMatches) * 100).toFixed(0)) : 0;
 
     let totalKills = 0;
     let totalDeaths = 0;
@@ -51,7 +50,7 @@ export class MatchStatistics {
   /**
    * Calculate role distribution statistics
    */
-  static calculateRoleStats(matches) {
+  static calculateRoleStats(matches: MatchData[]) {
     const roles = {
       top: 0,
       jungle: 0,
@@ -79,7 +78,7 @@ export class MatchStatistics {
   /**
    * Calculate win rate percentage
    */
-  static calculateWinRate(wins, losses) {
+  static calculateWinRate(wins: number, losses: number) {
     const total = wins + losses;
     if (total === 0) return 0;
     return ((wins / total) * 100).toFixed(0);
@@ -88,7 +87,7 @@ export class MatchStatistics {
   /**
    * Calculate KDA ratio
    */
-  static calculateKDA(kills, deaths, assists) {
+  static calculateKDA(kills: number, deaths: number, assists: number) {
     if (deaths === 0) return 'Perfect';
     return ((kills + assists) / deaths).toFixed(2);
   }

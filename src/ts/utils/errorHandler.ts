@@ -2,18 +2,27 @@
  * Centralized error handling utilities
  */
 
-import logger from '@/js/utils/logger.js';
+import logger from '@/ts/utils/logger.js';
 
 /**
  * Custom application error class
  */
+declare global {
+    interface Error {
+        statusCode?: number;
+        isOperational?: boolean;
+    }
+}
+
 export class AppError extends Error {
-  constructor(message, statusCode = 500, isOperational = true) {
+  constructor(message: string, statusCode = 500, isOperational = true) {
     super(message);
     this.name = 'AppError';
     this.statusCode = statusCode;
     this.isOperational = isOperational;
-    Error.captureStackTrace(this, this.constructor);
+    if (typeof (Error as any).captureStackTrace === 'function') {
+      (Error as any).captureStackTrace(this, this.constructor);
+    }
   }
 }
 
@@ -21,7 +30,7 @@ export class AppError extends Error {
  * API Error class for network/API failures
  */
 export class ApiError extends AppError {
-  constructor(message, statusCode = 500) {
+  constructor(message: string, statusCode = 500) {
     super(message, statusCode);
     this.name = 'ApiError';
   }
@@ -30,7 +39,7 @@ export class ApiError extends AppError {
 /**
  * Display error message to user
  */
-export function showError(message, elementId = 'errorMessage') {
+export function showError(message: string, elementId = 'errorMessage') {
   const errorElement = document.getElementById(elementId);
   if (errorElement) {
     errorElement.textContent = message;
@@ -56,7 +65,7 @@ export function hideError(elementId = 'errorMessage') {
 /**
  * Global error handler
  */
-export function handleError(error, userMessage = 'Something went wrong. Please try again.') {
+export function handleError(error: Error, userMessage = 'Something went wrong. Please try again.') {
   logger.error('Error occurred:', error);
 
   // Determine user-friendly message
@@ -67,7 +76,7 @@ export function handleError(error, userMessage = 'Something went wrong. Please t
       displayMessage = 'Summoner not found. Please check the name and tag.';
     } else if (error.statusCode === 429) {
       displayMessage = 'Too many requests. Please wait a moment and try again.';
-    } else if (error.statusCode >= 500) {
+    } else if (error.statusCode && error.statusCode >= 500) {
       displayMessage = 'Server error. Please try again later.';
     }
   } else if (error instanceof AppError) {
@@ -86,12 +95,12 @@ export function handleError(error, userMessage = 'Something went wrong. Please t
 /**
  * Async function wrapper with error handling
  */
-export function withErrorHandling(fn, errorMessage) {
-  return async (...args) => {
+export function withErrorHandling(fn: (...args: any[]) => Promise<any>, errorMessage: string) {
+  return async (...args: any[]) => {
     try {
       return await fn(...args);
     } catch (error) {
-      handleError(error, errorMessage);
+      handleError(error as Error, errorMessage);
       throw error;
     }
   };

@@ -3,17 +3,28 @@
  * Handles user profile display, match history, and sidebar information
  */
 
-import apiService from '@/js/api/ApiService.js';
-import matchDisplayManager from '@/js/pages/profile/MatchDisplayManager.js';
-import { displayRankedInfo, displayMasteryInfo } from '@/js/pages/profile/SidebarInfo.js';
-import logger from '@/js/utils/logger.js';
-import { handleError } from '@/js/utils/errorHandler.js';
-import config from '@/js/config/config.js';
+import apiService from '@/ts/api/ApiService.js';
+import matchDisplayManager from '@/ts/pages/profile/MatchDisplayManager.js';
+import { displayRankedInfo, displayMasteryInfo } from '@/ts/pages/profile/SidebarInfo.js';
+import logger from '@/ts/utils/logger.js';
+import { handleError } from '@/ts/utils/errorHandler.js';
+import type { SummonerInfo } from '@/ts/types/api.types.js';
+
+// Extend Window interface for global functions
+declare global {
+  interface Window {
+    manualUpdateProfile: () => Promise<void>;
+    goToSummary: () => void;
+    goToChampions: () => void;
+    goToLiveGame: () => void;
+    handleSearch: (summonerName: string, tagLine: string) => void;
+  }
+}
 
 /**
  * Load match history for a summoner
  */
-export async function loadMatchHistory(summonerName, tagLine) {
+export async function loadMatchHistory(summonerName: string, tagLine: string): Promise<void> {
   logger.debug(`Loading match history for: ${summonerName}#${tagLine}`);
 
   try {
@@ -30,16 +41,16 @@ export async function loadMatchHistory(summonerName, tagLine) {
 /**
  * Display summoner profile data
  */
-function displaySummonerData(data) {
+function displaySummonerData(data: SummonerInfo): void {
   logger.debug('Displaying summoner data:', data);
 
   // Update profile icon
-  const profileIcon = document.getElementById('profile-icon');
+  const profileIcon = document.getElementById('profile-icon') as HTMLImageElement | null;
   if (profileIcon) {
     const iconUrl = data.profileIconUrl || data.ProfileIconUrl;
     if (iconUrl) {
       logger.debug('Setting profile icon to:', iconUrl);
-      profileIcon.src = iconUrl;
+      profileIcon.src = iconUrl as string;
       profileIcon.onload = () => logger.success('Profile icon loaded successfully');
     } else {
       logger.warn('No profile icon URL found, using default');
@@ -54,7 +65,7 @@ function displaySummonerData(data) {
 
   if (profileName) profileName.textContent = data.gameName || data.GameName || 'Unknown';
   if (profileTag) profileTag.textContent = `#${data.tagLine || data.TagLine || ''}`;
-  if (profileLvl) profileLvl.textContent = data.summonerLevel || data.SummonerLevel || '1';
+  if (profileLvl) profileLvl.textContent = String(data.summonerLevel || data.SummonerLevel || '1');
 
   if (profileLastUpdate) {
     const lastUpdate = data.revisionDate || data.RevisionDate;
@@ -71,9 +82,9 @@ function displaySummonerData(data) {
 /**
  * Calculate time ago from a date
  */
-function getTimeAgo(date) {
+function getTimeAgo(date: Date): string {
   const now = new Date();
-  const diffInMilliseconds = now - date;
+  const diffInMilliseconds = now.getTime() - date.getTime();
   const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60));
   const diffInHours = Math.floor(diffInMinutes / 60);
   const diffInDays = Math.floor(diffInHours / 24);
@@ -92,7 +103,7 @@ function getTimeAgo(date) {
 /**
  * Load sidebar information (ranked + mastery)
  */
-async function loadSidebarInfo(puuid) {
+async function loadSidebarInfo(puuid: string): Promise<void> {
   logger.debug('Loading sidebar info for puuid:', puuid);
 
   try {
@@ -108,14 +119,14 @@ async function loadSidebarInfo(puuid) {
     displayMasteryInfo(masteryData);
   } catch (error) {
     logger.error('Error fetching sidebar info:', error);
-    handleError(error, 'Failed to load ranked and mastery information');
+    handleError(error as Error, 'Failed to load ranked and mastery information');
   }
 }
 
 /**
  * Initialize the profile page
  */
-async function init() {
+async function init(): Promise<void> {
   logger.debug('Profile page initializing...');
 
   // Get URL parameters
@@ -134,6 +145,10 @@ async function init() {
     displaySummonerData(summonerData);
 
     const puuid = summonerData.puuid || summonerData.Puuid;
+    
+    if (!puuid) {
+      throw new Error('PUUID not found in summoner data');
+    }
 
     logger.success('Profile loaded successfully. Loading match history...');
 
@@ -143,7 +158,7 @@ async function init() {
     logger.success('Profile page fully loaded');
   } catch (error) {
     logger.error('Failed to load profile:', error);
-    handleError(error, 'Failed to load summoner profile');
+    handleError(error as Error, 'Failed to load summoner profile');
   }
 }
 
@@ -182,7 +197,7 @@ window.goToLiveGame = function () {
 /**
  * Global search handler for clicking on player names in match history
  */
-window.handleSearch = function (summonerName, tagLine) {
+window.handleSearch = function (summonerName: string, tagLine: string) {
   logger.debug('handleSearch called with:', { summonerName, tagLine });
 
   if (!tagLine || tagLine === '') {
