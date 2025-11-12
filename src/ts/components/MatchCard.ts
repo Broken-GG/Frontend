@@ -3,30 +3,33 @@
  * Generates HTML for individual match cards
  */
 
-import dataDragonService from '@/js/services/DataDragonService.js';
-import augmentsService from '@/js/services/AugmentsService.js';
-import logger from '@/js/utils/logger.js';
+import dataDragonService from '@/ts/services/DataDragonService.js';
+import augmentsService from '@/ts/services/AugmentsService.js';
+import type { MatchData, PlayerStats } from '@/ts/types/api.types.js';
 
 export class MatchCard {
   /**
    * Create a match card element
    */
-  static async create(match) {
+  static async create(match: MatchData): Promise<HTMLDivElement> {
+    console.log('MatchCard.create called with:', match);
     const mainPlayer = match.MainPlayer || match.mainPlayer;
+    console.log('MainPlayer:', mainPlayer);
 
     // Win status is in the match object, not mainPlayer
-    const isWin = match.victory === true || match.Victory === true;
-    const matchId = match.MatchId || match.matchId || Date.now();
-    const gameMode = match.GameMode || match.gameMode || 'Unknown';
+    const isWin = (match as any).victory === true || (match as any).Victory === true;
+    const matchId = (match as any).MatchId || (match as any).matchId || Date.now();
+    const gameMode = (match as any).GameMode || (match as any).gameMode || 'Unknown';
 
     if (!mainPlayer) {
+      console.error('MainPlayer missing! Match object:', match);
       throw new Error('MainPlayer data missing from match');
     }
 
     const matchCard = document.createElement('div');
     const arenaClass = gameMode === 'Arena' ? 'arena' : '';
     matchCard.className = `match-card ${isWin ? 'victory' : 'defeat'} ${arenaClass}`;
-    matchCard.setAttribute('data-match-id', matchId);
+    matchCard.setAttribute('data-match-id', String(matchId));
 
     matchCard.innerHTML = await this.generateHTML(match, mainPlayer, isWin);
 
@@ -36,10 +39,10 @@ export class MatchCard {
   /**
    * Generate HTML for a match card
    */
-  static async generateHTML(match, mainPlayer, isWin) {
-    const gameMode = match.GameMode || match.gameMode || 'Unknown';
-    const gameDate = match.GameDate || match.gameDate;
-    const gameDurationMinutes = match.GameDurationMinutes || match.gameDurationMinutes;
+  static async generateHTML(match: MatchData, mainPlayer: PlayerStats, isWin: boolean): Promise<string> {
+    const gameMode = (match as any).GameMode || (match as any).gameMode || 'Unknown';
+    const gameDate = (match as any).GameDate || (match as any).gameDate;
+    const gameDurationMinutes = (match as any).GameDurationMinutes || (match as any).gameDurationMinutes;
 
     const championName = mainPlayer.ChampionName || mainPlayer.championName || 'Unknown';
     const championImageUrl =
@@ -125,7 +128,7 @@ export class MatchCard {
   /**
    * Generate summoner spells HTML
    */
-  static async generateSummonerSpellsHTML(player) {
+  static async generateSummonerSpellsHTML(player: PlayerStats): Promise<string> {
     const placeholder =
       'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="32" height="32"%3E%3Crect width="32" height="32" fill="%23333333"/%3E%3C/svg%3E';
 
@@ -133,8 +136,8 @@ export class MatchCard {
     const spell1Url = player.summoner1ImageUrl || player.Summoner1ImageUrl;
     const spell2Url = player.summoner2ImageUrl || player.Summoner2ImageUrl;
 
-    const spell1Name = dataDragonService.getSummonerSpellName(spell1Url) || 'Summoner Spell 1';
-    const spell2Name = dataDragonService.getSummonerSpellName(spell2Url) || 'Summoner Spell 2';
+    const spell1Name = (spell1Url && dataDragonService.getSummonerSpellName(spell1Url)) || 'Summoner Spell 1';
+    const spell2Name = (spell2Url && dataDragonService.getSummonerSpellName(spell2Url)) || 'Summoner Spell 2';
 
     if (spell1Url) {
       spellsHTML += `<div class="spell-slot" title="${spell1Name}">
@@ -160,14 +163,14 @@ export class MatchCard {
   /**
    * Generate item slots HTML
    */
-  static async generateItemSlotsHTML(player) {
+  static async generateItemSlotsHTML(player: PlayerStats): Promise<string> {
     const placeholder =
       'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="32" height="32"%3E%3Crect width="32" height="32" fill="%23333333"/%3E%3C/svg%3E';
 
     let itemsHTML = '';
     for (let i = 0; i <= 5; i++) {
-      const itemUrl = player[`item${i}ImageUrl`] || player[`Item${i}ImageUrl`];
-      const itemId = player[`item${i}`] || player[`Item${i}`];
+      const itemUrl = (player as any)[`item${i}ImageUrl`] || (player as any)[`Item${i}ImageUrl`];
+      const itemId = (player as any)[`item${i}`] || (player as any)[`Item${i}`];
 
       if (itemUrl && itemId && itemId !== 0) {
         const itemName = dataDragonService.getItemName(itemId) || `Item ${itemId}`;
@@ -198,34 +201,36 @@ export class MatchCard {
   }
 
   /**
-   * Generate Arena augments HTML
+   * Generate augments HTML (for Arena mode)
    */
-  static async generateAugmentsHTML(player) {
-    const augments = player.PlayerAugments || player.playerAugments || [];
+  static async generateAugmentsHTML(player: PlayerStats): Promise<string> {
+    const augments = (player as any).PlayerAugments || (player as any).playerAugments || [];
 
     if (!augments || augments.length === 0) {
       return '';
     }
 
-    const iconMap = await augmentsService.getAugmentIconMap();
-
     let augmentsHTML = '<div class="augments-row">';
-    augments.forEach((augmentId, index) => {
+    
+    // Use for...of loop instead of forEach to support await
+    for (let index = 0; index < augments.length; index++) {
+      const augmentId = augments[index];
+      
       if (!augmentId || augmentId === 0) {
         augmentsHTML += '<div class="augment-slot augment-empty"></div>';
-        return;
+        continue;
       }
 
-      const augmentInfo = augmentsService.getAugmentInfo(augmentId);
+      const augmentInfo = await augmentsService.getAugmentInfo(augmentId);
 
       if (augmentInfo && augmentInfo.iconUrl) {
         const augmentName = augmentInfo.name || `Augment ${augmentId}`;
         const rarity = augmentInfo.rarity || 0;
         let rarityClass = '';
 
-        if (rarity === 2 || String(rarity).toLowerCase().includes('prismatic')) {
+        if (Number(rarity) === 2 || String(rarity).toLowerCase().includes('prismatic')) {
           rarityClass = 'prismatic';
-        } else if (rarity === 1 || String(rarity).toLowerCase().includes('gold')) {
+        } else if (Number(rarity) === 1 || String(rarity).toLowerCase().includes('gold')) {
           rarityClass = 'gold';
         } else {
           rarityClass = 'silver';
@@ -242,7 +247,7 @@ export class MatchCard {
             <div class="augment-id-display">${index + 1}</div>
           </div>`;
       }
-    });
+    }
     augmentsHTML += '</div>';
 
     return augmentsHTML;
@@ -251,7 +256,7 @@ export class MatchCard {
   /**
    * Create Arena teams display (2v2v2v2v2v2 format)
    */
-  static async createArenaTeamsDisplay(match) {
+  static async createArenaTeamsDisplay(match: any) {
     const allPlayers = match.AllPlayers || match.allPlayers || [];
 
     if (allPlayers.length === 0) {
@@ -260,7 +265,7 @@ export class MatchCard {
 
     const teamsMap = new Map();
 
-    allPlayers.forEach((player) => {
+    allPlayers.forEach((player: any) => {
       const teamId = player.TeamId || player.teamId || 0;
       const subteamId = player.SubteamPlacement || player.subteamPlacement || 0;
       const teamKey = `${teamId}-${subteamId}`;
@@ -278,7 +283,7 @@ export class MatchCard {
 
     const duoTeamsHTML = await Promise.all(
       duoTeams.map(async (team) => {
-        const playersHTML = await Promise.all(team.players.map((player) => this.createPlayerDisplay(player)));
+        const playersHTML = await Promise.all(team.players.map((player: any) => this.createPlayerDisplay(player)));
         const placementLabel = this.getPlacementLabel(team.placement);
         return `
           <div class="arena-duo placement-${team.placement}">
@@ -297,18 +302,18 @@ export class MatchCard {
   /**
    * Create teams display (5v5 format)
    */
-  static async createTeamsDisplay(match) {
+  static async createTeamsDisplay(match: any) {
     const allPlayers = match.AllPlayers || match.allPlayers || [];
 
     if (allPlayers.length === 0) {
       return '<div class="team-vs-team"><div class="no-team-data">No team data available</div></div>';
     }
 
-    const team1 = allPlayers.filter((p) => (p.TeamId || p.teamId) === 100);
-    const team2 = allPlayers.filter((p) => (p.TeamId || p.teamId) === 200);
+    const team1 = allPlayers.filter((p: any) => (p.TeamId || p.teamId) === 100);
+    const team2 = allPlayers.filter((p: any) => (p.TeamId || p.teamId) === 200);
 
-    const team1HTML = await Promise.all(team1.map((player) => this.createPlayerDisplay(player)));
-    const team2HTML = await Promise.all(team2.map((player) => this.createPlayerDisplay(player)));
+    const team1HTML = await Promise.all(team1.map((player: any) => this.createPlayerDisplay(player)));
+    const team2HTML = await Promise.all(team2.map((player: any) => this.createPlayerDisplay(player)));
 
     return `
       <div class="team-vs-team">
@@ -326,7 +331,7 @@ export class MatchCard {
   /**
    * Create player display HTML
    */
-  static async createPlayerDisplay(player) {
+  static async createPlayerDisplay(player: any) {
     const championName = player.ChampionName || player.championName || 'Unknown';
     const summonerName = player.SummonerName || player.summonerName || 'Player';
     const tagLine = player.tagline || player.Tagline || player.tagLine || '';
@@ -354,7 +359,7 @@ export class MatchCard {
   /**
    * Get placement label with ordinal suffix
    */
-  static getPlacementLabel(placement) {
+  static getPlacementLabel(placement: any) {
     if (!placement || placement === 0) return '';
 
     const suffixes = ['th', 'st', 'nd', 'rd'];
@@ -365,9 +370,12 @@ export class MatchCard {
   /**
    * Calculate time ago from a date
    */
-  static getTimeAgo(date) {
-    const now = new Date();
-    const diffInMilliseconds = now - date;
+  static getTimeAgo(date: Date) {
+    if (!(date instanceof Date)) {
+      throw new Error('Invalid date');
+    }
+    const now: Date = new Date();
+    const diffInMilliseconds = now.getTime() - date.getTime();
     const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60));
     const diffInHours = Math.floor(diffInMinutes / 60);
     const diffInDays = Math.floor(diffInHours / 24);

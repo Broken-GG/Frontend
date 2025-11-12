@@ -3,12 +3,13 @@
  * Handles display of ranked and mastery information
  */
 
-import logger from '@/js/utils/logger.js';
+import logger from '@/ts/utils/logger.js';
+import type { RankedInfo, MasteryInfo } from '@/ts/types/api.types.js';
 
 /**
  * Display ranked information in the sidebar
  */
-export function displayRankedInfo(rankedData) {
+export function displayRankedInfo(rankedData: RankedInfo): void {
   const sidebar = document.querySelector('.profile-sidebar');
   if (!sidebar) {
     logger.warn('Sidebar element not found');
@@ -70,7 +71,7 @@ export function displayRankedInfo(rankedData) {
 /**
  * Display mastery information in the sidebar
  */
-export function displayMasteryInfo(masteryData) {
+export function displayMasteryInfo(masteryData: MasteryInfo): void {
   const sidebar = document.querySelector('.profile-sidebar');
   if (!sidebar) {
     logger.warn('Sidebar element not found');
@@ -122,7 +123,7 @@ export function displayMasteryInfo(masteryData) {
 /**
  * Calculate win rate percentage
  */
-function calculateWinRate(wins, losses) {
+function calculateWinRate(wins: number, losses: number): string {
   const total = wins + losses;
   if (total === 0) return '0';
   return ((wins / total) * 100).toFixed(1);
@@ -131,7 +132,7 @@ function calculateWinRate(wins, losses) {
 /**
  * Format mastery points with K/M suffix
  */
-function formatMasteryPoints(points) {
+function formatMasteryPoints(points: number) {
   if (points >= 1000000) {
     return (points / 1000000).toFixed(1) + 'M';
   } else if (points >= 1000) {
@@ -143,7 +144,7 @@ function formatMasteryPoints(points) {
 /**
  * Get color for rank tier
  */
-function getRankColor(tier) {
+function getRankColor(tier: string) {
   switch (tier) {
     case 'IRON':
       return '#6e6e6e';

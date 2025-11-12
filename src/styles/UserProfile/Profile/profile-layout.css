@@ -56,7 +56,7 @@
 
 .profile-main-top {
   background: rgba(31, 41, 55, 0.8);
-  height: 10rem;
+  min-height: 10rem;
   border-radius: 0.75rem;
 }
 

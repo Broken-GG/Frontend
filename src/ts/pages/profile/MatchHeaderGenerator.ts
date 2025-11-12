@@ -2,12 +2,13 @@
  * Match Header Generator
  * Generates HTML for match history headers and statistics displays
  */
+import type { MatchStatistics, RoleStats } from '@/ts/types/api.types.js';
 
 export class MatchHeaderGenerator {
   /**
    * Generate complete header HTML with stats
    */
-  static generateHeaderHTML(stats) {
+  static generateHeaderHTML(stats: MatchStatistics): string {
     const radius = 20;
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (stats.winRate / 100) * circumference;
@@ -41,7 +42,7 @@ export class MatchHeaderGenerator {
   /**
    * Generate role statistics bars HTML
    */
-  static generateRoleStatsHTML(roleStats, totalMatches) {
+  static generateRoleStatsHTML(roleStats: RoleStats, totalMatches: number): string {
     const maxGames = totalMatches > 0 ? totalMatches : 1;
 
     const roles = [
@@ -91,7 +92,7 @@ export class MatchHeaderGenerator {
   /**
    * Generate circular progress SVG
    */
-  static generateCircularProgress(winRate, radius = 20) {
+  static generateCircularProgress(winRate: number, radius = 20): string {
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (winRate / 100) * circumference;
 
@@ -109,7 +110,7 @@ export class MatchHeaderGenerator {
   /**
    * Generate no matches placeholder HTML
    */
-  static generateNoMatchesHTML() {
+  static generateNoMatchesHTML(): string {
     return `
       <div class="match-history-header">
         <h3>Recent Games (0G 0W 0L)</h3>

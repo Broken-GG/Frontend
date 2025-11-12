@@ -3,13 +3,25 @@
  * Manages the display of match history and handles loading more matches
  */
 
-import MatchCard from '@/js/components/MatchCard.js';
-import MatchStatistics from '@/js/pages/profile/MatchStatistics.js';
-import MatchHeaderGenerator from '@/js/pages/profile/MatchHeaderGenerator.js';
-import logger from '@/js/utils/logger.js';
-import config from '@/js/config/config.js';
+import MatchCard from '@/ts/components/MatchCard.js';
+import MatchStatistics from '@/ts/pages/profile/MatchStatistics.js';
+import MatchHeaderGenerator from '@/ts/pages/profile/MatchHeaderGenerator.js';
+import logger from '@/ts/utils/logger.js';
+import config from '@/ts/config/config.js';
+import type { MatchData } from '@/ts/types/api.types.js';
+import type ApiService from '@/ts/api/ApiService.js';
 
 export class MatchDisplayManager {
+  private isRendering: boolean;
+  private allMatches: MatchData[];
+  private matchesPerLoad: number;
+  private currentStartIndex: number;
+  private summonerName: string;
+  private tagLine: string;
+  private userService: typeof ApiService | null;
+  private isLoading: boolean;
+
+
   constructor() {
     this.isRendering = false;
     this.allMatches = [];
@@ -24,7 +36,7 @@ export class MatchDisplayManager {
   /**
    * Display match history data
    */
-  async displayMatchHistory(matchData, summonerName = '', tagLine = '', userService = null) {
+  async displayMatchHistory(matchData: MatchData[], summonerName = '', tagLine = '', userService: typeof ApiService | null = null): Promise<void> {
     if (this.isRendering) {
       logger.warn('Already rendering match history, skipping...');
       return;
@@ -49,8 +61,8 @@ export class MatchDisplayManager {
     this.allMatches = matchData;
 
     // Clear and display
-    const container = document.querySelector('.matches');
-    const topContainer = document.querySelector('.profile-main-top');
+    const container: HTMLElement | null = document.querySelector('.matches');
+    const topContainer: HTMLElement | null = document.querySelector('.profile-main-top');
 
     if (container) {
       container.innerHTML = '';
@@ -69,22 +81,32 @@ export class MatchDisplayManager {
   /**
    * Display match cards
    */
-  async displayMatches(matches, container) {
-    for (const match of matches) {
+  async displayMatches(matches: MatchData[], container: HTMLElement): Promise<void> {
+    logger.debug('displayMatches called with', matches.length, 'matches');
+    logger.debug('Container element:', container);
+    logger.debug('Container children before:', container.children.length);
+    
+    for (let i = 0; i < matches.length; i++) {
+      const match = matches[i];
       try {
+        logger.debug(`Creating match card ${i+1}:`, match);
         const matchElement = await MatchCard.create(match);
+        logger.debug(`Match element created, appending to container...`);
         container.appendChild(matchElement);
+        logger.debug(`Match card ${i+1} appended. Container children now:`, container.children.length);
       } catch (error) {
-        logger.error('Error creating match card:', error);
+        logger.error(`Error creating match card ${i+1}:`, error);
       }
     }
+    logger.debug('All match cards created. Final container children:', container.children.length);
+    logger.debug('Container innerHTML length:', container.innerHTML.length);
   }
 
   /**
    * Add the "Show more" button
    */
-  addLoadMoreButton(container) {
-    const existingButton = container.querySelector('.load-more-button');
+  addLoadMoreButton(container: HTMLElement | null): void {
+    const existingButton = container?.querySelector('.load-more-button');
     if (existingButton) {
       existingButton.remove();
     }
@@ -98,13 +120,13 @@ export class MatchDisplayManager {
       await this.loadMore();
     });
 
-    container.appendChild(button);
+    container?.appendChild(button);
   }
 
   /**
    * Load more matches from API
    */
-  async loadMore() {
+  async loadMore(): Promise<void> {
     if (this.isLoading) {
       logger.debug('Already loading...');
       return;
@@ -118,7 +140,7 @@ export class MatchDisplayManager {
     logger.debug(`Loading more matches... start=${this.currentStartIndex}`);
 
     this.isLoading = true;
-    const container = document.querySelector('.matches');
+    const container = document.querySelector('.matches') as HTMLElement | null;
     this.addLoadMoreButton(container);
 
     try {
@@ -135,13 +157,12 @@ export class MatchDisplayManager {
         this.allMatches.push(...newMatches);
         this.currentStartIndex += newMatches.length;
 
-        const button = container.querySelector('.load-more-button');
+        const button = container?.querySelector('.load-more-button');
         if (button) button.remove();
 
-        await this.displayMatches(newMatches, container);
+        await this.displayMatches(newMatches, container!);
         this.updateMatchHistoryHeader();
-        this.addLoadMoreButton(container);
-
+        this.addLoadMoreButton(container!);
         logger.debug(`Total matches now: ${this.allMatches.length}`);
       } else {
         logger.debug('No more matches available');
@@ -150,14 +171,38 @@ export class MatchDisplayManager {
       logger.error('Failed to load more matches:', error);
     } finally {
       this.isLoading = false;
-      this.addLoadMoreButton(container);
+      this.addLoadMoreButton(container!);
     }
   }
 
   /**
+   * Add match history header with statistics
+   */
+  addMatchHistoryHeader(topContainer: HTMLElement, matchCount: number): void {
+    const stats = MatchStatistics.calculateMatchStats(this.allMatches);
+    const headerHTML = MatchHeaderGenerator.generateHeaderHTML(stats);
+    const existingHeader = topContainer.querySelector('.match-history-header');
+    if (existingHeader) {
+      existingHeader.remove();
+    }
+    topContainer.innerHTML = `<div class="match-history-header">${headerHTML}</div>`;
+  }
+  
+  /**
+   * Update match history header with new count
+   */
+  updateMatchHistoryHeader(): void {
+    const topContainer = document.querySelector('.profile-main-top') as HTMLElement | null;
+    if (topContainer) {
+      this.addMatchHistoryHeader(topContainer, this.allMatches.length);
+    }
+  }
+
+
+  /**
    * Display "no matches" message
    */
-  displayNoMatches() {
+  displayNoMatches(): void {
     const container = document.querySelector('.matches');
     if (container) {
       container.innerHTML = MatchHeaderGenerator.generateNoMatchesHTML();
