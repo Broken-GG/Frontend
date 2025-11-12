@@ -2,7 +2,7 @@
  * Match Statistics Calculator
  * Calculates match stats, win rates, KDA, and role distribution
  */
-import type { MatchData, MatchStatistics as MatchStats } from '@/ts/types/api.types.js';
+import type { MatchData, MatchStatistics as MatchStats } from '@/types/api.types.js';
 
 export class MatchStatistics {
   /**

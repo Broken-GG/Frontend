@@ -3,13 +3,13 @@
  * Manages the display of match history and handles loading more matches
  */
 
-import MatchCard from '@/ts/components/MatchCard.js';
-import MatchStatistics from '@/ts/pages/profile/MatchStatistics.js';
-import MatchHeaderGenerator from '@/ts/pages/profile/MatchHeaderGenerator.js';
-import logger from '@/ts/utils/logger.js';
-import config from '@/ts/config/config.js';
-import type { MatchData } from '@/ts/types/api.types.js';
-import type ApiService from '@/ts/api/ApiService.js';
+import MatchCard from '@/components/MatchCard.js';
+import MatchStatistics from '@/pages/profile/MatchStatistics.js';
+import MatchHeaderGenerator from '@/pages/profile/MatchHeaderGenerator.js';
+import logger from '@/utils/logger.js';
+import config from '@/config/config.js';
+import type { MatchData } from '@/types/api.types.js';
+import type ApiService from '@/api/ApiService.js';
 
 export class MatchDisplayManager {
   private isRendering: boolean;
@@ -68,7 +68,7 @@ export class MatchDisplayManager {
       container.innerHTML = '';
 
       if (topContainer) {
-        this.addMatchHistoryHeader(topContainer, matchData.length);
+        this.addMatchHistoryHeader(topContainer);
       }
 
       await this.displayMatches(matchData, container);
@@ -178,7 +178,7 @@ export class MatchDisplayManager {
   /**
    * Add match history header with statistics
    */
-  addMatchHistoryHeader(topContainer: HTMLElement, matchCount: number): void {
+  addMatchHistoryHeader(topContainer: HTMLElement): void {
     const stats = MatchStatistics.calculateMatchStats(this.allMatches);
     const headerHTML = MatchHeaderGenerator.generateHeaderHTML(stats);
     const existingHeader = topContainer.querySelector('.match-history-header');
@@ -194,7 +194,7 @@ export class MatchDisplayManager {
   updateMatchHistoryHeader(): void {
     const topContainer = document.querySelector('.profile-main-top') as HTMLElement | null;
     if (topContainer) {
-      this.addMatchHistoryHeader(topContainer, this.allMatches.length);
+      this.addMatchHistoryHeader(topContainer);
     }
   }
 

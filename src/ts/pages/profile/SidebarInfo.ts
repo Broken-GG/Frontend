@@ -3,8 +3,8 @@
  * Handles display of ranked and mastery information
  */
 
-import logger from '@/ts/utils/logger.js';
-import type { RankedInfo, MasteryInfo } from '@/ts/types/api.types.js';
+import logger from '@/utils/logger.js';
+import type { RankedInfo, MasteryInfo, RankedQueueInfo, ChampionMastery } from '@/types/api.types.js';
 
 /**
  * Display ranked information in the sidebar
@@ -24,8 +24,8 @@ export function displayRankedInfo(rankedData: RankedInfo): void {
     rankedHTML += '<div class="rank-info unranked">Unranked</div>';
     rankedHTML += '</div>';
   } else {
-    const soloQueue = rankedData.find((q) => q.queueType === 'RANKED_SOLO_5x5');
-    const flexQueue = rankedData.find((q) => q.queueType === 'RANKED_FLEX_SR');
+    const soloQueue = rankedData.find((q: RankedQueueInfo) => q.queueType === 'RANKED_SOLO_5x5');
+    const flexQueue = rankedData.find((q: RankedQueueInfo) => q.queueType === 'RANKED_FLEX_SR');
 
     if (soloQueue) {
       const rankColor = getRankColor(soloQueue.tier);
@@ -86,7 +86,7 @@ export function displayMasteryInfo(masteryData: MasteryInfo): void {
   } else {
     const topChampions = masteryData.slice(0, 3);
 
-    topChampions.forEach((champ) => {
+    topChampions.forEach((champ: ChampionMastery) => {
       const iconUrl =
         champ.ChampionIconUrl ||
         champ.championIconUrl ||

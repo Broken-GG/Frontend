@@ -2,7 +2,7 @@
  * Match Header Generator
  * Generates HTML for match history headers and statistics displays
  */
-import type { MatchStatistics, RoleStats } from '@/ts/types/api.types.js';
+import type { MatchStatistics, RoleStats } from '@/types/api.types.js';
 
 export class MatchHeaderGenerator {
   /**

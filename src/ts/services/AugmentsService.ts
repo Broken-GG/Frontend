@@ -3,9 +3,9 @@
  * Handles Arena mode augments data from Community Dragon
  */
 
-import config from '@/ts/config/config.js';
-import logger from '@/ts/utils/logger.js';
-import type { AugmentData } from '@/ts/types/api.types.js';
+import config from '@/config/config.js';
+import logger from '@/utils/logger.js';
+import type { AugmentData } from '@/types/api.types.js';
 
 class AugmentsService {
     private cachedAugmentIconMap: Map<number | string, AugmentData> | null;

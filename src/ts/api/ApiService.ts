@@ -3,10 +3,10 @@
  * Handles all HTTP requests to the backend API
  */
 
-import config from '@/ts/config/config.js';
-import logger from '@/ts/utils/logger.js';
-import { ApiError } from '@/ts/utils/errorHandler.js';
-import type { SummonerInfo, MatchHistory, RankedInfo, MasteryInfo } from '@/ts/types/api.types.js';
+import config from '@/config/config.js';
+import logger from '@/utils/logger.js';
+import { ApiError } from '@/utils/errorHandler.js';
+import type { SummonerInfo, MatchHistory, RankedInfo, MasteryInfo } from '@/types/api.types.js';
 
 // ============================================================================
 // Type Definitions

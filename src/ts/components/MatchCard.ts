@@ -3,9 +3,9 @@
  * Generates HTML for individual match cards
  */
 
-import dataDragonService from '@/ts/services/DataDragonService.js';
-import augmentsService from '@/ts/services/AugmentsService.js';
-import type { MatchData, PlayerStats } from '@/ts/types/api.types.js';
+import dataDragonService from '@/services/DataDragonService.js';
+import augmentsService from '@/services/AugmentsService.js';
+import type { MatchData, PlayerStats } from '@/types/api.types.js';
 
 export class MatchCard {
   /**

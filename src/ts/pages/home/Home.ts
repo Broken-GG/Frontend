@@ -3,9 +3,9 @@
  * Handles summoner search functionality
  */
 
-import apiService from '@/ts/api/ApiService.js';
-import logger from '@/ts/utils/logger.js';
-import { showError, hideError } from '@/ts/utils/errorHandler.js';
+import apiService from '@/api/ApiService.js';
+import logger from '@/utils/logger.js';
+import { showError, hideError } from '@/utils/errorHandler.js';
 
 function parseSummonerInput(input: string): { summonerName: string; tagLine: string } {
   const trimmedInput: string = input.trim();

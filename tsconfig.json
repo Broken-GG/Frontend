@@ -12,6 +12,12 @@
     "isolatedModules": true,
     "noEmit": true,
     
+    // Path Mapping
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/ts/*"]
+    },
+    
     // Type Checking
     "strict": true,
     "noUnusedLocals": true,

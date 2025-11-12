@@ -2,7 +2,7 @@
  * Centralized error handling utilities
  */
 
-import logger from '@/ts/utils/logger.js';
+import logger from '@/utils/logger.js';
 
 /**
  * Custom application error class

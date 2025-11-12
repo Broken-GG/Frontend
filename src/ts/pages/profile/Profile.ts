@@ -3,12 +3,12 @@
  * Handles user profile display, match history, and sidebar information
  */
 
-import apiService from '@/ts/api/ApiService.js';
-import matchDisplayManager from '@/ts/pages/profile/MatchDisplayManager.js';
-import { displayRankedInfo, displayMasteryInfo } from '@/ts/pages/profile/SidebarInfo.js';
-import logger from '@/ts/utils/logger.js';
-import { handleError } from '@/ts/utils/errorHandler.js';
-import type { SummonerInfo } from '@/ts/types/api.types.js';
+import apiService from '@/api/ApiService.js';
+import matchDisplayManager from '@/pages/profile/MatchDisplayManager.js';
+import { displayRankedInfo, displayMasteryInfo } from '@/pages/profile/SidebarInfo.js';
+import logger from '@/utils/logger.js';
+import { handleError } from '@/utils/errorHandler.js';
+import type { SummonerInfo } from '@/types/api.types.js';
 
 // Extend Window interface for global functions
 declare global {
