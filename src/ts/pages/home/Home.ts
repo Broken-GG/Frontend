@@ -29,7 +29,7 @@ function parseSummonerInput(input: string): { summonerName: string; tagLine: str
  * Navigate to user profile page
  */
 function navigateToProfile(summonerName: string, tagLine: string): void {
-  const url = `src/pages/user.html?summonerName=${encodeURIComponent(summonerName)}&tagLine=${encodeURIComponent(tagLine)}`;
+  const url = `/user.html?summonerName=${encodeURIComponent(summonerName)}&tagLine=${encodeURIComponent(tagLine)}`;
   logger.info('Navigating to:', url);
   window.location.href = url;
 }

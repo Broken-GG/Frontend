@@ -12,14 +12,17 @@ export class MatchCard {
    * Create a match card element
    */
   static async create(match: MatchData): Promise<HTMLDivElement> {
+    console.log('MatchCard.create called with:', match);
     const mainPlayer = match.MainPlayer || match.mainPlayer;
+    console.log('MainPlayer:', mainPlayer);
 
     // Win status is in the match object, not mainPlayer
-    const isWin = match.victory === true || match.Victory === true;
-    const matchId = match.MatchId || match.matchId || Date.now();
-    const gameMode = match.GameMode || match.gameMode || 'Unknown';
+    const isWin = (match as any).victory === true || (match as any).Victory === true;
+    const matchId = (match as any).MatchId || (match as any).matchId || Date.now();
+    const gameMode = (match as any).GameMode || (match as any).gameMode || 'Unknown';
 
     if (!mainPlayer) {
+      console.error('MainPlayer missing! Match object:', match);
       throw new Error('MainPlayer data missing from match');
     }
 
@@ -37,9 +40,9 @@ export class MatchCard {
    * Generate HTML for a match card
    */
   static async generateHTML(match: MatchData, mainPlayer: PlayerStats, isWin: boolean): Promise<string> {
-    const gameMode = match.GameMode || match.gameMode || 'Unknown';
-    const gameDate = match.GameDate || match.gameDate;
-    const gameDurationMinutes = match.GameDurationMinutes || match.gameDurationMinutes;
+    const gameMode = (match as any).GameMode || (match as any).gameMode || 'Unknown';
+    const gameDate = (match as any).GameDate || (match as any).gameDate;
+    const gameDurationMinutes = (match as any).GameDurationMinutes || (match as any).gameDurationMinutes;
 
     const championName = mainPlayer.ChampionName || mainPlayer.championName || 'Unknown';
     const championImageUrl =

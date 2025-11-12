@@ -177,6 +177,7 @@ class ApiService {
 
   /**
    * Get match history by summoner
+   * First fetches summoner info to get PUUID, then fetches match history
    */
   async getMatchHistoryBySummoner(
     summonerName: string,
@@ -184,9 +185,15 @@ class ApiService {
     start: number = 0,
     count: number = 10
   ): Promise<MatchHistory> {
-    return this.get<MatchHistory>(
-      `/Match/${encodeURIComponent(summonerName)}/${encodeURIComponent(tagLine)}?start=${start}&count=${count}`
-    );
+    // First get summoner info to retrieve PUUID
+    const summonerInfo = await this.getSummonerInfo(summonerName, tagLine);
+    
+    if (!summonerInfo.puuid) {
+      throw new ApiError('Could not retrieve summoner PUUID', 404);
+    }
+    
+    // Then get match history using PUUID
+    return this.getMatchHistoryByPuuid(summonerInfo.puuid, start, count);
   }
 
   /**

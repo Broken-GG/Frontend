@@ -10,11 +10,14 @@
 export interface SummonerInfo {
   puuid: string;
   Puuid?: string;
-  gameName: string;
+  summonerName?: string;
+  gameName?: string;
   GameName?: string;
-  tagLine: string;
+  tagline?: string;
+  tagLine?: string;
   TagLine?: string;
-  summonerLevel: number;
+  level?: number;
+  summonerLevel?: number;
   SummonerLevel?: number;
   profileIconUrl?: string;
   ProfileIconUrl?: string;
@@ -119,19 +122,19 @@ export interface PlayerStats {
 }
 
 export interface MatchData {
-  matchId: string;
+  matchId?: string;
   MatchId?: string;
-  gameMode: string;
+  gameMode?: string;
   GameMode?: string;
-  gameDate: string | Date;
+  gameDate?: string | Date;
   GameDate?: string | Date;
-  gameDurationMinutes: number;
+  gameDurationMinutes?: number;
   GameDurationMinutes?: number;
   gameDuration?: number;
   GameDuration?: number;
-  victory: boolean;
+  victory?: boolean;
   Victory?: boolean;
-  mainPlayer: PlayerStats;
+  mainPlayer?: PlayerStats;
   MainPlayer?: PlayerStats;
   allPlayers?: PlayerStats[];
   AllPlayers?: PlayerStats[];

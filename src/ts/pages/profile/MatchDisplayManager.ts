@@ -4,6 +4,7 @@
  */
 
 import MatchCard from '@/ts/components/MatchCard.js';
+import MatchStatistics from '@/ts/pages/profile/MatchStatistics.js';
 import MatchHeaderGenerator from '@/ts/pages/profile/MatchHeaderGenerator.js';
 import logger from '@/ts/utils/logger.js';
 import config from '@/ts/config/config.js';
@@ -81,14 +82,24 @@ export class MatchDisplayManager {
    * Display match cards
    */
   async displayMatches(matches: MatchData[], container: HTMLElement): Promise<void> {
-    for (const match of matches) {
+    logger.debug('displayMatches called with', matches.length, 'matches');
+    logger.debug('Container element:', container);
+    logger.debug('Container children before:', container.children.length);
+    
+    for (let i = 0; i < matches.length; i++) {
+      const match = matches[i];
       try {
+        logger.debug(`Creating match card ${i+1}:`, match);
         const matchElement = await MatchCard.create(match);
+        logger.debug(`Match element created, appending to container...`);
         container.appendChild(matchElement);
+        logger.debug(`Match card ${i+1} appended. Container children now:`, container.children.length);
       } catch (error) {
-        logger.error('Error creating match card:', error);
+        logger.error(`Error creating match card ${i+1}:`, error);
       }
     }
+    logger.debug('All match cards created. Final container children:', container.children.length);
+    logger.debug('Container innerHTML length:', container.innerHTML.length);
   }
 
   /**
@@ -165,15 +176,16 @@ export class MatchDisplayManager {
   }
 
   /**
-   * Add match history header
+   * Add match history header with statistics
    */
   addMatchHistoryHeader(topContainer: HTMLElement, matchCount: number): void {
-    const headerHTML = `<div class="match-history-header"><h3>Recent Games (${matchCount}G)</h3></div>`;
+    const stats = MatchStatistics.calculateMatchStats(this.allMatches);
+    const headerHTML = MatchHeaderGenerator.generateHeaderHTML(stats);
     const existingHeader = topContainer.querySelector('.match-history-header');
     if (existingHeader) {
       existingHeader.remove();
     }
-    topContainer.insertAdjacentHTML('beforeend', headerHTML);
+    topContainer.innerHTML = `<div class="match-history-header">${headerHTML}</div>`;
   }
   
   /**

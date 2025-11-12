@@ -63,9 +63,9 @@ function displaySummonerData(data: SummonerInfo): void {
   const profileLvl = document.getElementById('profile-lvl');
   const profileLastUpdate = document.getElementById('profile-lastupdate');
 
-  if (profileName) profileName.textContent = data.gameName || data.GameName || 'Unknown';
-  if (profileTag) profileTag.textContent = `#${data.tagLine || data.TagLine || ''}`;
-  if (profileLvl) profileLvl.textContent = String(data.summonerLevel || data.SummonerLevel || '1');
+  if (profileName) profileName.textContent = (data as any).summonerName || data.gameName || data.GameName || 'Unknown';
+  if (profileTag) profileTag.textContent = `#${(data as any).tagline || data.tagLine || data.TagLine || ''}`;
+  if (profileLvl) profileLvl.textContent = String((data as any).level || data.summonerLevel || data.SummonerLevel || '1');
 
   if (profileLastUpdate) {
     const lastUpdate = data.revisionDate || data.RevisionDate;

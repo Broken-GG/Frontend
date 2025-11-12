@@ -25,20 +25,11 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     
-    // Path Mapping (for @ alias)
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/ts/*": ["./src/ts/*"]
-    },
-    
     // Additional Options
     "allowJs": true,
     "checkJs": false
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
     "src/**/*.ts",
     "src/**/*.tsx"
   ],
