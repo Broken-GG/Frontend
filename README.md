@@ -1,8 +1,11 @@
-# 🎮 BrokenGG - League of Legends Match Tracker
+# 🎮 Frontend - Broken.GG Web Client
 
-[![CI/CD Integration](https://github.com/Broken-GG/Frontend/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Broken-GG/Frontend/actions)
+[![CI/CD Pipeline](https://github.com/Broken-GG/Frontend/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Broken-GG/Frontend/actions)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-Build-646CFF?logo=vite)](https://vitejs.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A modern, clean web application for tracking League of Legends match history, player statistics, and performance analytics.
+> Modern, type-safe web client for League of Legends match history tracking, built with TypeScript and Vite.
 
 ## 📁 Project Structure
 
@@ -43,14 +46,16 @@ Frontend/
 └── server.py                          # Development server (Python fallback)
 ```
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Node.js** >= 18.0.0
-- **npm** or **yarn**
-- Modern web browser
-- Backend API running (see Backend README)
+| Requirement | Version | Required |
+|------------|---------|----------|
+| **Node.js** | >= 18.0 | ✅ |
+| **npm** | >= 9.0 | ✅ |
+| **Backend API** | Running | ✅ |
+| Modern Browser | Latest | ✅ |
 
 ### Installation
 
@@ -68,7 +73,11 @@ Frontend/
 3. **Configure environment**
    ```bash
    cp .env.example .env
-   # Edit .env with your configuration
+   ```
+   
+   Edit `.env`:
+   ```env
+   VITE_API_URL=http://localhost:5000/api
    ```
 
 4. **Start development server**
@@ -76,36 +85,29 @@ Frontend/
    npm run dev
    ```
 
-   The app will be available at `http://localhost:3000`
+   🌐 Open http://localhost:3000
 
-### Alternative Development Servers
+### Development Commands
 
-**Using Python (Simple HTTP Server):**
 ```bash
-npm run serve
-# or
-python server.py
-```
-
-**Using Vite Preview (after build):**
-```bash
-npm run build
-npm run preview
-```
-
-## 📦 Build & Deployment
-
-### Development Build
-```bash
+# Start dev server with hot reload
 npm run dev
-```
 
-### Production Build
-```bash
+# Build for production
 npm run build
-```
 
-Build output will be in the `dist/` directory.
+# Preview production build
+npm run preview
+
+# Type check
+npm run type-check
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+```
 
 ## 🐳 Docker
 
@@ -247,30 +249,39 @@ Backend Response → Parse Data → Update DOM → Display
    - Appends to existing display
    - Updates statistics
 
-## 🎯 Features
+## ✨ Features
 
-### Implemented
-✅ Summoner search with validation
-✅ Profile information display
-✅ Match history with detailed stats
-✅ Win/loss indicators
-✅ Champion icons and images
-✅ Item and summoner spell icons
-✅ Ranked information display
-✅ Champion mastery display
-✅ Pagination (load more)
-✅ Error handling and fallbacks
-✅ Responsive design
+### Core Features
+- ✅ **Summoner Search** - Name#Tag validation
+- ✅ **Profile Display** - Level, rank, mastery
+- ✅ **Match History** - Detailed game stats
+- ✅ **Win/Loss Tracking** - Visual indicators
+- ✅ **Champion Data** - Icons and images
+- ✅ **Item Display** - Item builds per game
+- ✅ **Ranked Info** - All queue types
+- ✅ **Mastery Points** - Top champions
+- ✅ **Pagination** - Infinite scroll
+- ✅ **Error Handling** - Graceful fallbacks
+- ✅ **Responsive** - Mobile-first design
+- ✅ **TypeScript** - Type safety
 
-### Planned
-- [ ] Match filtering (by queue type)
-- [ ] Statistics graphs and charts
+### Technical Features
+- ⚡ **Vite Build** - Fast HMR and builds
+- 🎨 **Modern CSS** - CSS Grid & Flexbox
+- 🔒 **Type Safety** - Full TypeScript coverage
+- 📦 **Tree Shaking** - Optimized bundles
+- 🖼️ **Lazy Loading** - Images on demand
+- 💾 **Caching** - API response caching
+
+### Roadmap
+- [ ] Match filtering by queue type
+- [ ] Statistics graphs (Chart.js)
 - [ ] Favorite summoners (localStorage)
 - [ ] Dark/Light theme toggle
-- [ ] Match search/filter
 - [ ] Live game tracking
 - [ ] Compare summoners
-- [ ] Export match history
+- [ ] Export match history (CSV/JSON)
+- [ ] PWA support
 
 ## 🔍 Code Quality
 
@@ -290,94 +301,155 @@ Backend Response → Parse Data → Update DOM → Display
 - ✅ Fast loading times
 - ✅ Easy to understand and maintain
 
-## 🐛 Debugging
+## 🐛 Troubleshooting
 
-### Enable Debug Logging
-Console logs are throughout the code. Open browser DevTools (F12) to see:
-- API calls and responses
-- Data transformations
-- Error messages
-- Loading states
+<details>
+<summary><b>Images not loading</b></summary>
 
-### Common Issues
-
-**Images not loading?**
-- Check Data Dragon version
+- Check Data Dragon version in console
 - Verify champion name spelling
-- Check browser console for 404s
+- Check Network tab for 404s
+- Clear browser cache
 
-**API not responding?**
-- Ensure backend is running
-- Check CORS configuration
-- Verify API URL in config.js
+</details>
 
-**Match history empty?**
-- Verify summoner has recent matches
-- Check console for API errors
-- Ensure correct region
+<details>
+<summary><b>API not responding</b></summary>
+
+```bash
+# Verify backend is running
+curl http://localhost:5000/api/health
+
+# Check CORS in browser console
+# Update .env with correct API URL
+```
+
+</details>
+
+<details>
+<summary><b>Build errors</b></summary>
+
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# Clear Vite cache
+rm -rf node_modules/.vite
+npm run dev
+```
+
+</details>
+
+<details>
+<summary><b>TypeScript errors</b></summary>
+
+```bash
+# Run type check
+npm run type-check
+
+# Update types
+npm install --save-dev @types/node
+```
+
+</details>
 
 ## 🚀 Performance
 
 ### Optimizations
-- Image lazy loading (browser native)
-- Minimal JavaScript payload
-- Cached API responses (5 minutes)
-- Nginx gzip compression (Docker)
-- Static asset caching (1 year)
+- ⚡ Vite's lightning-fast HMR
+- 📦 Tree shaking & code splitting
+- 🖼️ Native lazy loading for images
+- 💾 API response caching (5min)
+- 🗜️ Nginx gzip compression
+- 🎯 Static asset caching (1 year)
+- 🔄 Service worker (planned)
 
-### Lighthouse Scores (Target)
-- Performance: 90+
-- Accessibility: 90+
-- Best Practices: 90+
-- SEO: 90+
+### Lighthouse Targets
+- **Performance:** 90+
+- **Accessibility:** 95+
+- **Best Practices:** 95+
+- **SEO:** 90+
 
 ## 🔐 Security
 
 ### Implemented
-- XSS protection headers (nginx)
-- Input sanitization
-- CORS handling
-- No sensitive data in frontend
-- PUUID kept server-side
+- ✅ XSS protection headers
+- ✅ Input sanitization
+- ✅ CORS configuration
+- ✅ No sensitive data in frontend
+- ✅ Secure headers (Nginx)
 
-### Recommendations
-- Use HTTPS in production
-- Implement Content Security Policy
-- Add rate limiting on forms
-- Sanitize all user inputs
+### Production Checklist
+- [ ] Enable HTTPS
+- [ ] Configure CSP headers
+- [ ] Add rate limiting
+- [ ] Enable security.txt
+- [ ] Set up monitoring
 
 ## 🤝 Contributing
 
-### Code Style
-- Use ES6+ features
-- 2-space indentation
-- Semicolons required
-- camelCase for variables
-- PascalCase for classes
-- Descriptive variable names
+### Code Standards
 
-### Adding New Features
-1. Create new module in appropriate folder
-2. Export functions/classes
-3. Import where needed
-4. Update this README
-5. Test in multiple browsers
+```typescript
+// ✅ Good: Type-safe and descriptive
+interface SummonerData {
+  name: string;
+  tagline: string;
+  level: number;
+}
+
+const getSummoner = async (name: string, tag: string): Promise<SummonerData> => {
+  // Implementation
+};
+
+// ❌ Bad: Untyped and unclear
+const getData = async (n, t) => {
+  // Implementation
+};
+```
+
+### Development Guidelines
+- ✅ TypeScript for all new code
+- ✅ 2-space indentation
+- ✅ Semicolons required
+- ✅ camelCase for variables
+- ✅ PascalCase for classes/interfaces
+- ✅ Descriptive naming
+- ✅ JSDoc comments
+
+### Pull Request Process
+
+1. Fork & create feature branch
+2. Make changes with type safety
+3. Run checks: `npm run type-check && npm run lint`
+4. Commit with conventional commits
+5. Push and create PR
+
+### Browser Support
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- Mobile browsers
 
 ## 📚 Resources
 
+- [Vite Documentation](https://vitejs.dev/)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [MDN Web Docs](https://developer.mozilla.org/)
-- [JavaScript Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 - [Riot Data Dragon](https://developer.riotgames.com/docs/lol#data-dragon)
-- [CSS Grid Layout](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout)
 
-## 📝 Notes
+## 📝 License
 
-- All times displayed in user's local timezone
-- Champion images from Riot Data Dragon CDN
-- Fallback images for missing assets
-- Mobile-optimized touch targets
-- Keyboard navigation support
+MIT License - See [LICENSE](LICENSE) file
+
+## 🙏 Acknowledgments
+
+- Riot Games for Data Dragon API
+- Vite team for amazing build tool
+- Community contributors
 
 ---
 
-Keep the frontend simple, fast, and focused on user experience! 🎮
+<p align="center">Part of <a href="https://github.com/Broken-GG/BrokenGG">Broken.GG</a> project</p>
+<p align="center">Built with ❤️ using TypeScript & Vite</p>
