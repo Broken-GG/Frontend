@@ -9,7 +9,7 @@ on:
 jobs:
   # Validate Frontend Files
   validate:
-    name: Validate HTML & JavaScript
+    name: Validate HTML & TypeScript
     runs-on: ubuntu-latest
     
     steps:
@@ -24,15 +24,18 @@ jobs:
     - name: Check file structure
       run: |
         echo "Checking required files..."
-        test -f public/index.html || { echo "Missing index.html"; exit 1; }
-        test -f public/src/js/HomePage/index.js || { echo "Missing HomePage script"; exit 1; }
+        test -f src/pages/index.html || { echo "Missing index.html"; exit 1; }
+        test -f src/pages/user.html || { echo "Missing user.html"; exit 1; }
+        test -f src/ts/pages/home/Home.ts || { echo "Missing Home.ts"; exit 1; }
+        test -f src/ts/pages/profile/Profile.ts || { echo "Missing Profile.ts"; exit 1; }
+        test -f tsconfig.json || { echo "Missing tsconfig.json"; exit 1; }
         echo "✅ All required files present"
     
-    - name: Validate JavaScript syntax
-      run: |
-        echo "Validating JavaScript files..."
-        find public/src/js -name "*.js" -exec node --check {} \;
-        echo "✅ JavaScript syntax valid"
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: TypeScript compilation check
+      run: npx tsc --noEmit
     
     # Optional: Add ESLint if you want stricter checking
     # - name: Install ESLint
